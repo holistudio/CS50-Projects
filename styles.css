@@ -1,0 +1,88 @@
+a {
+  color: black;
+}
+
+a:hover {
+  color: #007bff;
+  text-decoration-line: none;
+}
+
+.label {
+  width: 100%;
+  height: 100%;
+}
+
+.label > * {
+  text-align: center;
+  font-size: 1.8vw;
+}
+
+.col-4, .col-2 {
+  padding: 15px;
+}
+
+.box {
+  position: relative;
+}
+
+.box::before {
+  content: "";
+  display: block;
+  padding-top: 100%;
+}
+
+.card-body {
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  right: 0;
+  left: 0;
+}
+
+img {
+  max-width: 100%;
+  height: auto;
+}
+
+#random, #graphic, #interact, #built-env, #data-viz {
+  font-size: 3vw;
+  font-weight: bold;
+  padding: 20px;
+}
+
+#data-viz {
+  background-color: deepskyblue;
+  color: midnightblue;
+}
+
+#built-env {
+  color: darkgreen;
+  background-color: limegreen;
+}
+
+#interact {
+  color: maroon;
+  background-color: hotpink;
+}
+
+#graphic {
+  color: indigo;
+  background-color: mediumorchid;
+}
+
+#random {
+  color: seagreen;
+  background-color: mediumspringgreen;
+}
+
+.position {
+  font-weight: bold;
+}
+.position .title {
+  font-style: italic;
+}
+.position .year {
+  text-align: right;
+}
+
+/*# sourceMappingURL=styles.css.map */
