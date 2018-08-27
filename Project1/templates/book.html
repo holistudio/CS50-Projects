@@ -1,0 +1,61 @@
+{% extends "layout.html" %}
+
+{% block title %}
+    {{book.title}}
+{% endblock %}
+
+{% block body %}
+    
+    <dl>
+        <dt><h2>{{book.title}}</h2></dt>
+        <dd>Author: {{book.author}}</dd>
+        <dd>Publication Year: {{book.year}}</dd>
+        <dd>ISBN: {{book.isbn}}</dd>
+        {% if avg_rating == "N/A" %}
+        <dd>Goodreads Average Rating: <span class="text-muted">Goodreads data not available for this book</span></dd>
+        {% else %}
+        <dd>Goodreads Average Rating: {{avg_rating}}/5 <span class="text-muted">out of {{numReviews}} reviews</span></dd>
+        {% endif %}
+    </dl>
+
+    
+    <h4 class="mt-4">User Reviews</h4>
+        {% for review in reviews %}
+        <div class="card mb-2">   
+            <div class="card-body">
+                <dl>
+                    <dt class="card-title">{{review.username}} </dt>
+                    <dd>Rating: {{review.rating}}</dd>
+                    <dd>Review: {{review.text}}</dd>
+                </dl>  
+            </div>
+        </div>
+        {% endfor %}
+    <h4 class="mt-4">Submit a Review</h4>
+    {% with messages = get_flashed_messages() %}
+         {% if messages %}
+            {% for message in messages %}
+                <div class="alert alert-danger" role="alert">
+                    {{ message }}
+                </div>
+            {% endfor %}
+
+         {% endif %}
+    {% endwith %}
+    <form action="{{ url_for('book', isbn=book.isbn) }}" method="post">
+        <div class="form-group d-inline-flex"><select class=" form-control" name="rating">
+            <option>5</option>
+            <option>4</option>
+            <option>3</option>
+            <option>2</option>
+            <option>1</option>
+        </select></div>
+        <div class="form-group">
+            <textarea class="form-control" rows="10" placeholder="Write a review here." name="text"></textarea>
+        </div>
+        <div class="form-group">
+            <button class="btn btn-primary" type="submit">Submit</button>
+        </div>
+
+    </form>
+{% endblock %}

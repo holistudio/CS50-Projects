@@ -1,0 +1,34 @@
+{% extends "layout.html" %}
+
+{% block title %}
+    ReadTree
+{% endblock %}
+
+{% block body %}
+    
+    {% with messages = get_flashed_messages() %}
+         {% if messages %}
+            {% for message in messages %}
+                <div class="alert alert-success" role="alert">
+                    {{ message }}
+                </div>
+            {% endfor %}
+
+         {% endif %}
+    {% endwith %}
+
+    {% if session['username'] is defined %}
+    <p>
+        <form action="{{ url_for('search') }}" method="post">
+            <div class="input-group">
+              <input type="text" name="search" class="form-control" placeholder="Search by title, author, or ISBN">
+              <div class="input-group-append">
+                <button class="btn btn-primary" type="submit">Search</button>
+              </div>
+            </div>
+        </form>
+    </p>
+
+    {% endif %}
+
+{% endblock %}
