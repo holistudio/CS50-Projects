@@ -1,6 +1,5 @@
-# Project 1
-
-Web Programming with Python and JavaScript
+# Project 1 - Books
+A book review website called ReadTree (a play on ReadMe)
 
 ## templates folder
 
