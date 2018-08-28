@@ -30,6 +30,7 @@ def index():
 def search():
 	search = request.form.get("search")
 
+	#ignore case for the search query
 	searchResults = db.execute("SELECT * FROM books WHERE LOWER(title) LIKE LOWER(:search) OR LOWER(author) LIKE LOWER(:search) OR isbn LIKE :search", {"search": f"%{search}%"}).fetchall();
 	return render_template("results.html", searchResults= searchResults)
 
@@ -57,7 +58,7 @@ def book(isbn):
 	#find book's associated reviews
 	reviews = db.execute("SELECT * FROM reviews JOIN users ON reviews.user_id=users.id WHERE book_id = :book_id", {"book_id": book.id}).fetchall();
 				
-	#goodreads API
+	#goodreads API for obtaining average rating and number of reviews
 	res = requests.get("https://www.goodreads.com/book/review_counts.json", params={"key": "34r5Is1bRbPIY9WOyQC64w", "isbns": {book.isbn}})
 	if res.status_code != 200:
 		avg_rating = "N/A"
@@ -71,7 +72,10 @@ def book(isbn):
 	return render_template("book.html", book=book, reviews=reviews, avg_rating=avg_rating, numReviews=numReviews)
 @app.route("/api/<isbn>", methods=["GET"])
 def api(isbn):
+	#find book in database with exact isbn and return a JSON
+
 	query = db.execute("SELECT * FROM books WHERE isbn = :isbn", {"isbn": isbn})
+
 	if query.rowcount == 0:
 		return jsonify({"error": "ISBN not found"}), 404 #error response code
 	book = query.fetchone()
@@ -92,10 +96,10 @@ def login():
 	if request.method == "POST":
 		username = request.form.get("username")
 		password = request.form.get("pw")
+		
 		#Invalid username or password cases
 		usernameCheck = db.execute("SELECT * FROM users WHERE username = :username", {"username": username}).rowcount != 0
 		passwordCheck = False;
-
 
 		if usernameCheck:
 			passwordCheck = db.execute("SELECT password FROM users WHERE username = :username", {"username": username}).fetchone()[0] == password
@@ -120,7 +124,7 @@ def register():
 	    username = request.form.get("username")
 	    password = request.form.get("pw")
 	    confirm = request.form.get("pw-conf")
-	    #security implications
+
 	    #make sure password match
 	    if password != confirm:
 	    	return render_template("register.html", message="Passwords do not match")
