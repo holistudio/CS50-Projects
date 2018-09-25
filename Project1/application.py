@@ -29,7 +29,6 @@ def index():
 @app.route("/search", methods=["POST"])
 def search():
 	search = request.form.get("search")
-
 	#ignore case for the search query
 	searchResults = db.execute("SELECT * FROM books WHERE LOWER(title) LIKE LOWER(:search) OR LOWER(author) LIKE LOWER(:search) OR isbn LIKE :search", {"search": f"%{search}%"}).fetchall();
 	return render_template("results.html", searchResults= searchResults)
@@ -59,7 +58,7 @@ def book(isbn):
 	reviews = db.execute("SELECT * FROM reviews JOIN users ON reviews.user_id=users.id WHERE book_id = :book_id", {"book_id": book.id}).fetchall();
 				
 	#goodreads API for obtaining average rating and number of reviews
-	res = requests.get("https://www.goodreads.com/book/review_counts.json", params={"key": "34r5Is1bRbPIY9WOyQC64w", "isbns": {book.isbn}})
+	res = requests.get("https://www.goodreads.com/book/review_counts.json", params={"key": os.getenv("GOODREADS_KEY"), "isbns": {book.isbn}})
 	if res.status_code != 200:
 		avg_rating = "N/A"
 		numReviews = "N/A"
@@ -79,7 +78,7 @@ def api(isbn):
 	if query.rowcount == 0:
 		return jsonify({"error": "ISBN not found"}), 404 #error response code
 	book = query.fetchone()
-	res = requests.get("https://www.goodreads.com/book/review_counts.json", params={"key": "34r5Is1bRbPIY9WOyQC64w", "isbns": {book.isbn}})
+	res = requests.get("https://www.goodreads.com/book/review_counts.json", params={"key": os.getenv("GOODREADS_KEY"), "isbns": {book.isbn}})
 	if res.status_code != 200:
 		avg_rating = "N/A"
 		numReviews = "N/A"
@@ -142,3 +141,6 @@ def register():
 	    	
 	else:
 		return render_template("register.html", message="")
+
+if __name__ == "__main__":
+    app.run(debug=True)

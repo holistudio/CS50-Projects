@@ -1,0 +1,441 @@
+<!DOCTYPE html>
+<html>
+    <head>
+    	<title>WTFlack</title>
+    	<link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.1.3/css/bootstrap.min.css" integrity="sha384-MCw98/SFnGE8fJT3GXwEOngsV7Zt27NXFoaoApmYm81iuXoPkFOJwJ8ERdknLPMO" crossorigin="anonymous">
+    	<script type="text/javascript" src="//cdnjs.cloudflare.com/ajax/libs/socket.io/1.3.6/socket.io.min.js"></script>
+        <script src="{{ url_for('static', filename='index.js') }}"></script>
+        <style type="text/css">
+            #message-input{
+                width: 100%;
+            }
+            #messages-view{
+                overflow: auto;
+            }
+        </style>
+    </head>
+    <body>
+
+        <script type="text/javascript">
+            function privateChannelExists(user1, user2){
+                var key1 = `${user1}-${user2}`;
+                var key2 = `${user2}-${user1}`;
+                return (privateChannels.hasOwnProperty(key1) || privateChannels.hasOwnProperty(key2));
+            }
+
+            function listChannels(channels){
+                document.querySelector('#channel-list').innerHTML='';
+
+                for (channel in channels) {
+                    const label = document.createElement('a');
+                    label.id=`${channel}`;
+                    label.classList.add("channel");
+                    label.innerHTML=`${channel}`;
+                    label.href="";
+                    const item = document.createElement('dd');
+                    item.appendChild(label);
+                    document.querySelector('#channel-list').append(item);
+                }
+            }
+
+            function listPrivateChannels(privateChannels){
+                document.querySelector('#private-channel-list').innerHTML='';
+
+                for (channel in privateChannels) {
+                    // extract out the 'non-user' string in channel keys
+                    const username = localStorage.getItem('username');
+                    channel= channel.replace(`${username}`, "").replace("-","");
+
+                    //create channel list on webpage
+                    const label = document.createElement('a');
+                    label.id=`${channel}`;
+                    label.classList.add("channel"); 
+                    label.innerHTML=`${channel}`;
+                    label.href="";
+                    const item = document.createElement('dd');
+                    item.appendChild(label);
+                    document.querySelector('#private-channel-list').append(item);
+                }
+
+            }
+
+            function displayMessages(){
+                let currentChannel = localStorage.getItem('current-channel');
+
+                document.querySelector('#messages-list').innerHTML='';
+                if(currentChannel!=""){
+                    //if current channel is a public channel
+                    if(channels.hasOwnProperty(currentChannel)){
+                        var channelCategory=channels;
+                    }
+                    else{
+                        //otherwise it's a private channel
+                        var channelCategory=privateChannels;
+
+                        //try the two different combinations of User1-User2 keys
+                        //set currentChannel to the correct combination
+                        const username = localStorage.getItem('username');
+                        if(privateChannels.hasOwnProperty(`${username}-${currentChannel}`)){
+                            currentChannel=`${username}-${currentChannel}`;
+                        }
+                        else if (privateChannels.hasOwnProperty(`${currentChannel}-${username}`)){
+                            currentChannel=`${currentChannel}-${username}`;
+                        }
+                        else{
+                            //error
+                        }
+                    }
+
+                    for (var i = 0; i < channelCategory[currentChannel].length; i++) {
+                        const user = document.createElement('dt');
+                        const message = document.createElement('dd');
+                        const timestamp = document.createElement('span');
+                        
+                        user.innerHTML = `${channelCategory[currentChannel][i].user}`;
+                        message.innerHTML = `${channelCategory[currentChannel][i].message}`;
+                        timestamp.setAttribute("class", "text-muted");
+                        timestamp.innerHTML = ` ${channelCategory[currentChannel][i].timestamp}`;
+                        timestamp.style.fontWeight= "normal";
+                        user.appendChild(timestamp);
+                        document.querySelector("#messages-list").append(user);
+                        document.querySelector("#messages-list").append(message);
+                    }
+                }
+                
+            }
+
+            function addMessageToDisplay(messagePackage){
+                const user = document.createElement('dt');
+                const message = document.createElement('dd');
+                const timestamp = document.createElement('span');
+                user.innerHTML = `${messagePackage.user}`;
+                message.innerHTML = `${messagePackage.message}`;
+                timestamp.innerHTML = ` ${messagePackage.timestamp}`;
+                timestamp.setAttribute("class", "text-muted");
+                timestamp.style.fontWeight= "normal";
+                user.appendChild(timestamp);
+                document.querySelector("#messages-list").append(user);
+                document.querySelector("#messages-list").append(message);
+                return false;
+            }
+
+            //initialize username and current channel as blank
+            if (!localStorage.getItem('username')){
+                localStorage.setItem('username', "");
+            }
+            if (!localStorage.getItem('current-channel')){
+                localStorage.setItem('current-channel', "");
+            }
+            if (!localStorage.getItem('first-entry')){
+                localStorage.setItem('first-entry', 0);
+            }
+            
+            //public and private channels converted to json
+            const channels = {{ channels|tojson }};
+            const privateChannels = {{ privatechannels|tojson }};
+
+
+            if(!(channels.hasOwnProperty(localStorage.getItem('current-channel'))) && !(privateChannelExists(localStorage.getItem('username'),localStorage.getItem('current-channel')))){
+                localStorage.setItem('current-channel', "");
+            }
+
+            
+
+
+
+            document.addEventListener('DOMContentLoaded', () => {
+
+                // Connect to websocket
+                var socket = io.connect(location.protocol + '//' + document.domain + ':' + location.port);
+
+                //display last username entered
+                document.querySelector('#username').innerHTML = localStorage.getItem('username');
+
+                if(localStorage.getItem('first-entry')==0){
+                    socket.emit('update display name', localStorage.getItem('username'));
+                    localStorage.setItem('first-entry', 1);
+                }
+
+                if(localStorage.getItem('username')=="" || localStorage.getItem('current-channel')==""){
+                    document.querySelector('#message').hidden = true;
+                }
+                else{
+                    document.querySelector('#message').hidden = false;
+                }
+                
+                //hide alerts
+                document.querySelectorAll('.alert').forEach(div => {
+                    div.hidden = true;
+                });
+
+
+                listChannels(channels);
+
+                listPrivateChannels(privateChannels);
+
+                //establish channel click behavior
+                document.querySelectorAll('.channel').forEach(channel => {
+                    channel.onclick = () => {
+                        localStorage.setItem('current-channel', channel.innerHTML);
+                    };
+                });
+                
+                //highlight current channel
+                if(localStorage.getItem('current-channel')!=""){
+                    document.getElementById(`${localStorage.getItem('current-channel')}`).classList.add("bg-primary","text-white");
+                }
+
+                displayMessages();
+
+                if (localStorage.getItem('username') != ""){
+                    //if username is not blank
+                    //display button for "logging out"
+                    document.querySelector('#logout').hidden = false;
+                    //hide the new display name form
+                    document.querySelector('#new-name').hidden = true;
+                }
+                else{
+                    //if username is blank
+                    //display form for changing display name
+                    document.querySelector('#new-name').hidden = false;
+                    //hide button for "logging out"
+                    document.querySelector('#logout').hidden = true;
+                    //hide private channel forms, because you can't send private messages with a blank username
+                    document.querySelector('#new-private-channel').hidden = true;
+                }
+
+                //on "log out" set username to blank
+                document.querySelector('#logout').onsubmit = () => {
+                    localStorage.setItem('username', "");
+                    socket.emit('update display name', "");
+                }
+
+                //change display name when submit button is clicked
+                document.querySelector('#new-name').onsubmit = () => {
+                    //make sure it's not a public channel name
+                    if(!(channels.hasOwnProperty(document.querySelector("#username-input").value))){
+                        //store display name into local storage
+                        localStorage.setItem('username', document.querySelector("#username-input").value);
+
+                        socket.emit('update display name',document.querySelector("#username-input").value);
+
+                        //if on private channel, clear messages and reset current channel
+                        if (!(channels.hasOwnProperty(localStorage.getItem('current-channel')))){
+                            document.querySelector('#messages-list').innerHTML='';
+                            localStorage.setItem('current-channel',"");
+                            //privateChannels list should update after page refresh
+                        }
+                        //clear inputs
+                        document.querySelector("#username-input").value='';
+                    }
+                    else{
+                        //flash username can't be a channel name
+                        document.querySelector("#invalid-username").innerHTML="Username can't be a public channel name";
+                        document.querySelector("#invalid-username").hidden=false;
+                        //prevent page refresh
+                        return false;
+                    }
+  
+                    //if display name change sucessful refresh page
+                }
+
+                socket.on('check username', () => {
+                    if(localStorage.getItem('username')!=""){
+                        console.log('checking username')
+                        socket.emit('update display name',localStorage.getItem('username'))
+                    }
+                    return false;
+                });
+
+                //create a new public channel
+                document.querySelector('#new-channel').onsubmit = () => {
+                    //check if public channel already exists:
+                    if(channels.hasOwnProperty(document.querySelector("#channel-input").value)){
+                        //flash public channel already exists
+                        document.querySelector("#invalid-username").innerHTML="Public channel already exists";
+                        document.querySelector("#invalid-username").hidden=false;
+                        document.querySelector("#channel-input").value='';
+
+                        
+
+                    }
+                    else{
+                        socket.emit('create channel', document.querySelector("#channel-input").value);
+                    }
+                    
+                    //clear inputs
+                    document.querySelector("#channel-input").value='';
+
+                    //prevent page refresh
+                    return false;
+                }
+
+                //update list of public channels
+                socket.on('channel created', channel => {
+                    const label = document.createElement('a');
+                    label.id=`${channel}`;
+                    label.classList.add("channel"); 
+                    label.innerHTML=`${channel}`;
+                    label.href="";
+                    const item = document.createElement('dd');
+                    item.appendChild(label);
+                    document.querySelector('#channel-list').append(item);
+                    //establish channel click behavior
+                    document.getElementById(`${channel}`).onclick = () => {
+                        localStorage.setItem('current-channel', channel)
+                    };
+                    return false;
+                });
+
+
+                //send message to public/private channel
+                document.querySelector('#message').onsubmit = () => {
+                    
+                    const currentChannel = localStorage.getItem('current-channel');
+                    const user = localStorage.getItem('username');
+                    const message = document.querySelector('#message-input').value;
+                    const timestamp = new Date().toISOString();
+
+                    
+                    const messagePackage = {'user': user, 'message': message, 'timestamp':timestamp, 'channel':currentChannel};
+                    
+                    //if message is on a public channel
+                    //if current channel is a public channel
+                    if(channels.hasOwnProperty(currentChannel)){
+                        socket.emit('add message', messagePackage);
+                        
+                    }
+                    else{
+                        //otherwise it's a private channel
+                        socket.emit('add private message', messagePackage);
+                        addMessageToDisplay(messagePackage);
+                    }
+
+                    
+                    document.querySelector('#message-input').value='';
+                    return false;
+                }
+
+                //update list of messages on the current public channel, once received emit from server.
+                socket.on('message added', messagePackage => {
+                    if(messagePackage.channel == localStorage.getItem('current-channel')){
+                        addMessageToDisplay(messagePackage);
+                    }
+                    return false;
+                });
+
+                //create a new private channel
+                document.querySelector('#new-private-channel').onsubmit = () => {
+
+                    //make sure it's not a public channel name
+                    if (!channels.hasOwnProperty(document.querySelector("#private-channel-input").value)){
+                        //make sure it's also not a private channel already on the list
+                        if (privateChannelExists()){
+                            document.querySelector('#invalid-private-channel').innerHTML="Private channel already exists";
+                            document.querySelector('#invalid-private-channel').hidden=false;
+                            document.querySelector("#channel-input").value='';
+                            return false;
+                        }
+                        else{
+                            socket.emit('create private channel', document.querySelector("#private-channel-input").value);
+                        }
+                    }
+                    else{
+                        //flash private channel can't be a public channel name
+                        document.querySelector('#invalid-private-channel').innerHTML="Private channel can't be a public channel name";
+                        document.querySelector('#invalid-private-channel').hidden=false;
+                        document.querySelector("#channel-input").value='';
+                        return false;
+                    }
+                    //clear inputs
+                    document.querySelector("#channel-input").value='';
+
+                    //page will refresh and updated private channel list will be displayed for the current user
+                }
+
+
+                //update list of messages on the current private channel, once received emit from server.
+                socket.on('private message added', messagePackage => {
+
+                    //if message's channel is the same as the username, then a few display elements may need to be updated
+                    if (localStorage.getItem('username') == messagePackage.channel){
+
+                        //check if the message channel doesn't already exist
+                        if (!(privateChannelExists(messagePackage.user, messagePackage.channel))){
+
+                            // if it doesn't, update list of private channels displayed
+
+                            const channel = messagePackage.user;
+                            const label = document.createElement('a');
+                            label.id=`${channel}`;
+                            label.classList.add("channel"); 
+                            label.innerHTML=`${channel}`;
+                            label.href="";
+                            const item = document.createElement('dd');
+                            item.appendChild(label);
+                            document.querySelector('#private-channel-list').append(item);
+                            //establish channel click behavior
+                            document.getElementById(`${channel}`).onclick = () =>{
+                                localStorage.setItem('current-channel', channel)
+                            };
+
+                        }
+
+                        //if the person is currently viewing that private channel update messages with append
+                        if(messagePackage.user == localStorage.getItem('current-channel')){
+                            addMessageToDisplay(messagePackage);
+                        }
+                    }
+                    return false;
+                });
+
+            });
+
+                
+        </script>
+        <div class="row">
+    	<div class="col-2">
+        <h1 id="username"></h1>
+        <form id="logout"><input type="submit" value="Log Out"></form>
+        <form id="new-name">
+        	<input id="username-input" autocomplete="off" type="text" placeholder="Enter a display name">
+        </form>	
+        <p>
+            <div id="invalid-username" class="alert alert-danger" role="alert"></div>
+        </p>
+        <p><dt>Channels</dt>
+            <dl id="channel-list">
+            </dl>
+        </p>
+        <p>
+            <form id="new-channel">
+            	<input id="channel-input" autocomplete="off" type="text" placeholder="Create a new channel">
+            </form>	
+        </p>
+        <p>
+            <div id="invalid-public-channel" class="alert alert-danger" role="alert"></div>
+        </p>
+        <p>
+            <dt>Private Messages</dt>
+            <dl id="private-channel-list">
+            </dl>
+        </p>
+        <p>
+            <form id="new-private-channel">
+                <input id="private-channel-input" autocomplete="off" type="text" placeholder="Type in the username you want to message privately.">
+            </form> 
+        </p>
+        <p>
+            <div id="invalid-private-channel" class="alert alert-danger" role="alert"></div>
+        </p>
+        </div>
+        <div id="messages-view" class="col">
+            <dl id="messages-list">
+            </dl>
+            <form id="message">
+                <input form="message" id="message-input" type="text" placeholder="Type a message" autocomplete="off">
+            </form>
+        </div>
+        </div>
+    </body>
+</html>
