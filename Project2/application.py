@@ -60,7 +60,7 @@ def index():
 	#check that username key exists in session
 	#if it does not, initialize it to a blank string
 	#this is the current solution to preventing KeyErrors
-	#after server reloads. (before_first_request webhook doesn't seem to work)
+	#after server reloads. (before_first_request webhook doesn't seem to work after the second server reload during debug mode)
 	if not('username' in session):
 		session['username'] = '';
 
