@@ -14,9 +14,11 @@ Session(app)
 
 
 channels = {};
+# Example
 # channels = {'main': [{'user': 'Josh', 'message': 'hi', 'timestamp':'YYYY-MM-DDTHH:mm:ss.sssZ'}]};
 
 privateChannels = {};
+# Example
 # privateChannels = {'Charlie-Zoey': [{'user': 'Charlie', 'message': 'hi', 'timestamp':'YYYY-MM-DDTHH:mm:ss.sssZ', 'channel':'Zoey'}]};
 
 
@@ -26,6 +28,7 @@ def separate(privateChannel):
 	#it assumes however, that the usernames themselves do not have dashes
 	#so Joseph Gordon-Levitt cannot be a username...yet
 	#sorry JGL
+
 	newName=0;
 	names=['',''];
 	for c in str(privateChannel):
@@ -36,8 +39,11 @@ def separate(privateChannel):
 	return names;
 
 def findPrivateChannels ():
+	#this finds all relevant private channels for the session's user
+
 	global privateChannels
 	userPrivateChannels = {};
+
 	if(session['username'] != ''):
 		#only send private channels for the current session's user
 		for key in privateChannels.keys():
@@ -45,15 +51,20 @@ def findPrivateChannels ():
 				usernames = separate(key);
 				if (session['username'] == usernames[0] or session['username'] == usernames[1]):
 					userPrivateChannels[key] = privateChannels[key];
-	
 	return userPrivateChannels;
 
 
 
 @app.route("/")
 def index():
+	#check that username key exists in session
+	#if it does not, initialize it to a blank string
+	#this is the current solution to preventing KeyErrors
+	#after server reloads. (before_first_request webhook doesn't seem to work)
 	if not('username' in session):
 		session['username'] = '';
+
+	#find user's private channels to list
 	userPrivateChannels = findPrivateChannels();
 	return render_template("index.html", channels = channels, privatechannels= userPrivateChannels)
 
@@ -66,6 +77,8 @@ def sessionUser(displayName):
 @socketio.on("create channel")
 def newchannel(channelName):
 	global channels
+
+	#create a new public channel
 	channels[str(channelName)] = [];
 	emit("channel created", channelName, broadcast=True)
 
@@ -73,6 +86,7 @@ def newchannel(channelName):
 def addmessage(messagePackage):
 	global channels
 
+	#find message's channel and add message object to array of messages
 	currentChannel = messagePackage['channel'];
 	channels[currentChannel]=channels[currentChannel]+[{'user': messagePackage['user'], 'message': messagePackage['message'], 'timestamp':messagePackage['timestamp']}];
 
@@ -82,7 +96,6 @@ def addmessage(messagePackage):
 
 @socketio.on("create private channel")
 def newPrivateChannel(channelName):
-
 	privateChannels[(f"{session['username']}-{channelName}")] = [];
 
 
@@ -90,17 +103,21 @@ def newPrivateChannel(channelName):
 def addPrivateMessage(privateMessagePackage):
 	global privateChannels
 
-	#create a key with 'User1-User2' and 'User2-User1'
+	#create keys with 'User1-User2' and 'User2-User1'
 	key1 = (f"{session['username']}-{privateMessagePackage['channel']}");
 	key2 = (f"{privateMessagePackage['channel']}-{session['username']}");
+
+	#determine if the private channel between the two users is key1 or key2
 	if(key1 in privateChannels or key2 in privateChannels):
-		#determine currentChannel in privateChannels
 		if key1 in privateChannels:
 			currentChannel = key1;
 		elif key2 in privateChannels:
 			currentChannel = key2;
+
 		#add message to existing channel
 		privateChannels[currentChannel]=privateChannels[currentChannel]+[privateMessagePackage];
+
+		#limit to 100 private messages
 		if (len(privateChannels[currentChannel])>100):
 			privateChannels[currentChannel].pop(0);
 		emit("private message added", privateMessagePackage, broadcast=True);

@@ -151,11 +151,15 @@
                 //display last username entered
                 document.querySelector('#username').innerHTML = localStorage.getItem('username');
 
+                //determine if it's the user's browser's first time since server is up and running
+                //to update local storage username to server variable
+
                 if(localStorage.getItem('first-entry')==0){
                     socket.emit('update display name', localStorage.getItem('username'));
                     localStorage.setItem('first-entry', 1);
                 }
 
+                //display message input only if username and channel are select
                 if(localStorage.getItem('username')=="" || localStorage.getItem('current-channel')==""){
                     document.querySelector('#message').hidden = true;
                 }
@@ -168,9 +172,10 @@
                     div.hidden = true;
                 });
 
-
+                //list public channels
                 listChannels(channels);
 
+                //list private channels
                 listPrivateChannels(privateChannels);
 
                 //establish channel click behavior
@@ -185,8 +190,10 @@
                     document.getElementById(`${localStorage.getItem('current-channel')}`).classList.add("bg-primary","text-white");
                 }
 
+                //display current channel's messages, public or private
                 displayMessages();
 
+                //display appropriate inputs depending one whether a user is logged in or not
                 if (localStorage.getItem('username') != ""){
                     //if username is not blank
                     //display button for "logging out"
@@ -239,6 +246,7 @@
                     //if display name change sucessful refresh page
                 }
 
+                //send back to server the browser's username when received socket emit from server
                 socket.on('check username', () => {
                     if(localStorage.getItem('username')!=""){
                         console.log('checking username')
@@ -247,7 +255,7 @@
                     return false;
                 });
 
-                //create a new public channel
+                //button for create a new public channel
                 document.querySelector('#new-channel').onsubmit = () => {
                     //check if public channel already exists:
                     if(channels.hasOwnProperty(document.querySelector("#channel-input").value)){
@@ -255,9 +263,6 @@
                         document.querySelector("#invalid-username").innerHTML="Public channel already exists";
                         document.querySelector("#invalid-username").hidden=false;
                         document.querySelector("#channel-input").value='';
-
-                        
-
                     }
                     else{
                         socket.emit('create channel', document.querySelector("#channel-input").value);
@@ -289,21 +294,18 @@
 
 
                 //send message to public/private channel
-                document.querySelector('#message').onsubmit = () => {
-                    
+                document.querySelector('#message').onsubmit = () => { 
                     const currentChannel = localStorage.getItem('current-channel');
                     const user = localStorage.getItem('username');
                     const message = document.querySelector('#message-input').value;
                     const timestamp = new Date().toISOString();
 
-                    
                     const messagePackage = {'user': user, 'message': message, 'timestamp':timestamp, 'channel':currentChannel};
                     
-                    //if message is on a public channel
                     //if current channel is a public channel
                     if(channels.hasOwnProperty(currentChannel)){
+                        //add message to the public channel
                         socket.emit('add message', messagePackage);
-                        
                     }
                     else{
                         //otherwise it's a private channel
@@ -311,7 +313,7 @@
                         addMessageToDisplay(messagePackage);
                     }
 
-                    
+                    //clear inputs
                     document.querySelector('#message-input').value='';
                     return false;
                 }
@@ -337,6 +339,7 @@
                             return false;
                         }
                         else{
+                            //create private channel once all checks are met.
                             socket.emit('create private channel', document.querySelector("#private-channel-input").value);
                         }
                     }
@@ -364,7 +367,6 @@
                         if (!(privateChannelExists(messagePackage.user, messagePackage.channel))){
 
                             // if it doesn't, update list of private channels displayed
-
                             const channel = messagePackage.user;
                             const label = document.createElement('a');
                             label.id=`${channel}`;
@@ -378,7 +380,6 @@
                             document.getElementById(`${channel}`).onclick = () =>{
                                 localStorage.setItem('current-channel', channel)
                             };
-
                         }
 
                         //if the person is currently viewing that private channel update messages with append
@@ -388,7 +389,6 @@
                     }
                     return false;
                 });
-
             });
 
                 
