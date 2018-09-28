@@ -165,7 +165,6 @@
 
                 //determine if it's the user's browser's first time since server is up and running
                 //to update local storage username to server variable
-
                 if(localStorage.getItem('first-entry')==0){
                     socket.emit('update display name', localStorage.getItem('username'));
                     localStorage.setItem('first-entry', 1);
@@ -205,7 +204,7 @@
                 //display current channel's messages, public or private
                 displayMessages();
 
-                //display appropriate inputs depending one whether a user is logged in or not
+                //display appropriate display name inputs depending one whether a user is logged in or not
                 if (localStorage.getItem('username') != ""){
                     //if username is not blank
                     //display button for "logging out"
@@ -229,7 +228,7 @@
                     socket.emit('update display name', "");
                 }
 
-                //change display name when submit button is clicked
+                //change display name when it's submitted
                 document.querySelector('#new-name').onsubmit = () => {
                     //make sure it's not a public channel name
                     if(!(channels.hasOwnProperty(document.querySelector("#username-input").value))){

@@ -24,7 +24,7 @@ privateChannels = {};
 
 
 def separate(privateChannel):
-	#this separates out the two usernames in the private channel
+	#separates out the two usernames in the private channel
 	#it assumes however, that the usernames themselves do not have dashes
 	#so Joseph Gordon-Levitt cannot be a username...yet
 	#sorry JGL
@@ -39,7 +39,7 @@ def separate(privateChannel):
 	return names;
 
 def findPrivateChannels ():
-	#this finds all relevant private channels for the session's user
+	#finds all relevant private channels for the session's user
 
 	global privateChannels
 	userPrivateChannels = {};
