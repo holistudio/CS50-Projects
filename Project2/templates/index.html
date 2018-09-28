@@ -260,8 +260,8 @@
                     //check if public channel already exists:
                     if(channels.hasOwnProperty(document.querySelector("#channel-input").value)){
                         //flash public channel already exists
-                        document.querySelector("#invalid-username").innerHTML="Public channel already exists";
-                        document.querySelector("#invalid-username").hidden=false;
+                        document.querySelector("#invalid-public-channel").innerHTML="Public channel already exists";
+                        document.querySelector("#invalid-public-channel").hidden=false;
                         document.querySelector("#channel-input").value='';
                     }
                     else{
@@ -289,6 +289,11 @@
                     document.getElementById(`${channel}`).onclick = () => {
                         localStorage.setItem('current-channel', channel)
                     };
+
+                    //hide flash message
+                    document.querySelector("#invalid-public-channel").innerHTML="";
+                    document.querySelector("#invalid-public-channel").hidden=true;
+
                     return false;
                 });
 
@@ -341,6 +346,9 @@
                         else{
                             //create private channel once all checks are met.
                             socket.emit('create private channel', document.querySelector("#private-channel-input").value);
+                            //hide flash message
+                            document.querySelector("#invalid-private-channel").innerHTML="";
+                            document.querySelector("#invalid-private-channel").hidden=true;
                         }
                     }
                     else{
