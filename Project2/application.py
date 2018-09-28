@@ -72,7 +72,6 @@ def index():
 def sessionUser(displayName):
 	#change session username
 	session['username'] = str(displayName);
-	print(session['username'])
 
 @socketio.on("create channel")
 def newchannel(channelName):
