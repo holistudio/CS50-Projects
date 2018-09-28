@@ -65,6 +65,22 @@
 
             }
 
+            //add one message to the display given a message JSON object
+            function addMessageToDisplay(messagePackage){
+                const user = document.createElement('dt');
+                const message = document.createElement('dd');
+                const timestamp = document.createElement('span');
+                user.innerHTML = `${messagePackage.user}`;
+                message.innerHTML = `${messagePackage.message}`;
+                timestamp.innerHTML = ` ${messagePackage.timestamp}`;
+                timestamp.setAttribute("class", "text-muted");
+                timestamp.style.fontWeight= "normal";
+                user.appendChild(timestamp);
+                document.querySelector("#messages-list").append(user);
+                document.querySelector("#messages-list").append(message);
+                return false;
+            }
+
             function displayMessages(){
                 //display for current channel
                 let currentChannel = localStorage.getItem('current-channel');
@@ -98,37 +114,10 @@
 
                     //display messages of that channel
                     for (var i = 0; i < channelCategory[currentChannel].length; i++) {
-                        const user = document.createElement('dt');
-                        const message = document.createElement('dd');
-                        const timestamp = document.createElement('span');
-                        
-                        user.innerHTML = `${channelCategory[currentChannel][i].user}`;
-                        message.innerHTML = `${channelCategory[currentChannel][i].message}`;
-                        timestamp.setAttribute("class", "text-muted");
-                        timestamp.innerHTML = ` ${channelCategory[currentChannel][i].timestamp}`;
-                        timestamp.style.fontWeight= "normal";
-                        user.appendChild(timestamp);
-                        document.querySelector("#messages-list").append(user);
-                        document.querySelector("#messages-list").append(message);
+                        addMessageToDisplay(channelCategory[currentChannel][i]);
                     }
                 }
                 
-            }
-
-            //add one message to the display given a message JSON object
-            function addMessageToDisplay(messagePackage){
-                const user = document.createElement('dt');
-                const message = document.createElement('dd');
-                const timestamp = document.createElement('span');
-                user.innerHTML = `${messagePackage.user}`;
-                message.innerHTML = `${messagePackage.message}`;
-                timestamp.innerHTML = ` ${messagePackage.timestamp}`;
-                timestamp.setAttribute("class", "text-muted");
-                timestamp.style.fontWeight= "normal";
-                user.appendChild(timestamp);
-                document.querySelector("#messages-list").append(user);
-                document.querySelector("#messages-list").append(message);
-                return false;
             }
 
             //initialize username and current channel as blank
