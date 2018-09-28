@@ -26,5 +26,5 @@ Currently an empty file, as it is unclear how Python/Flask global variables can 
 ### requirements.txt
 Required pip packages to install for deployment.
 
-### use-case-testing-xlsx
+### use-case-testing.xlsx
 An initial attempt to organize how to test the application.
