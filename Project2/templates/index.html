@@ -17,15 +17,19 @@
     <body>
 
         <script type="text/javascript">
+
             function privateChannelExists(user1, user2){
+                //determine if a private channel already exists between the two users, user1 and user2
                 var key1 = `${user1}-${user2}`;
                 var key2 = `${user2}-${user1}`;
                 return (privateChannels.hasOwnProperty(key1) || privateChannels.hasOwnProperty(key2));
             }
 
             function listChannels(channels){
+                //clear display list of public channels
                 document.querySelector('#channel-list').innerHTML='';
 
+                //list public channels
                 for (channel in channels) {
                     const label = document.createElement('a');
                     label.id=`${channel}`;
@@ -39,8 +43,10 @@
             }
 
             function listPrivateChannels(privateChannels){
+                //clear display list of private channels
                 document.querySelector('#private-channel-list').innerHTML='';
 
+                //list private channels
                 for (channel in privateChannels) {
                     // extract out the 'non-user' string in channel keys
                     const username = localStorage.getItem('username');
@@ -60,10 +66,14 @@
             }
 
             function displayMessages(){
+                //display for current channel
                 let currentChannel = localStorage.getItem('current-channel');
 
+                //clear message display
                 document.querySelector('#messages-list').innerHTML='';
                 if(currentChannel!=""){
+                    //determine channel is public or private channel
+
                     //if current channel is a public channel
                     if(channels.hasOwnProperty(currentChannel)){
                         var channelCategory=channels;
@@ -86,6 +96,7 @@
                         }
                     }
 
+                    //display messages of that channel
                     for (var i = 0; i < channelCategory[currentChannel].length; i++) {
                         const user = document.createElement('dt');
                         const message = document.createElement('dd');
@@ -104,6 +115,7 @@
                 
             }
 
+            //add one message to the display given a message JSON object
             function addMessageToDisplay(messagePackage){
                 const user = document.createElement('dt');
                 const message = document.createElement('dd');
@@ -126,6 +138,8 @@
             if (!localStorage.getItem('current-channel')){
                 localStorage.setItem('current-channel', "");
             }
+
+            //set up local variable for determining if this is the browser's first time to the site
             if (!localStorage.getItem('first-entry')){
                 localStorage.setItem('first-entry', 0);
             }
@@ -134,15 +148,13 @@
             const channels = {{ channels|tojson }};
             const privateChannels = {{ privatechannels|tojson }};
 
-
+            //if for some reason the browser's current channel is not inside the server variables for public and private channels
+            //reset local storage for current channel to blank string
             if(!(channels.hasOwnProperty(localStorage.getItem('current-channel'))) && !(privateChannelExists(localStorage.getItem('username'),localStorage.getItem('current-channel')))){
                 localStorage.setItem('current-channel', "");
             }
 
             
-
-
-
             document.addEventListener('DOMContentLoaded', () => {
 
                 // Connect to websocket
