@@ -51,7 +51,7 @@ class PizzaMenuItem(MenuItem):
 		(SICILIAN, "Sicilian"),
 	)
 
-	item_name = models.CharField(max_length=3, choicese = PIZZA_TYPE_CHOICES, default = REGULAR)
+	item_name = models.CharField(max_length=3, choices = PIZZA_TYPE_CHOICES, default = REGULAR)
 
 	#Pizza Size (Small/Large)
 	size = models.CharField(max_length=1, choices = SIZE_CHOICES, default = SMALL)
@@ -67,7 +67,7 @@ class PizzaMenuItem(MenuItem):
 	topping_sel = models.CharField(max_length=1, choices = TOPPING_SEL_CHOICES, default = 'C')
 
 #ToppingMenuItem (though it is technically a menu item, a topping doesn't have an associated price or "type")
-class ToppingMenuItem(models.Model)
+class ToppingMenuItem(models.Model):
 	#Topping Name
 	name = models.CharField(max_length=100);
 
@@ -76,8 +76,13 @@ class SubMenuItem(MenuItem):
 	size = models.CharField(max_length=1, choices = SIZE_CHOICES, default = SMALL)
 
 class SaladMenuItem(MenuItem):
+	class Meta:
+		abstract = False;
 
 class PastaMenuItem(MenuItem):
+	class Meta:
+		abstract = False;
+
 
 class PlatterMenuItem(MenuItem):
 	#Platter Size (Small/Large)
