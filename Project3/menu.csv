@@ -1,0 +1,63 @@
+PZA,Regular,Small,13.2,1 topping
+PZA,Regular,Small,14.7,2 toppings
+PZA,Regular,Small,15.7,3 toppings
+PZA,Regular,Small,17.25,Special
+PZA,Regular,Large,17.45,Cheese
+PZA,Regular,Large,19.45,1 topping
+PZA,Regular,Large,21.45,2 toppings
+PZA,Regular,Large,23.45,3 toppings
+PZA,Regular,Large,25.45,Special
+PZA,Sicilian,Small,23.45,Cheese
+PZA,Sicilian,Small,25.45,1 topping
+PZA,Sicilian,Small,27.45,2 toppings
+PZA,Sicilian,Small,28.45,3 toppings
+PZA,Sicilian,Small,29.45,Special
+PZA,Sicilian,Large,37.7,Cheese
+PZA,Sicilian,Large,39.7,1 topping
+PZA,Sicilian,Large,41.7,2 toppings
+PZA,Sicilian,Large,43.7,3 toppings
+PZA,Sicilian,Large,44.7,Special
+SUB,Italian,Small,6.5,null
+SUB,Ham + Cheese,Small,6.5,null
+SUB,Meatball,Small,6.5,null
+SUB,Tuna,Small,6.5,null
+SUB,Turkey,Small,7.5,null
+SUB,Chicken Parmigiana,Small,7.5,null
+SUB,Eggplant Parmigiana,Small,6.5,null
+SUB,Steak,Small,6.5,null
+SUB,Steak + Cheese,Small,6.95,null
+SUB,Hamburger,Small,4.6,null
+SUB,Cheeseburger,Small,5.1,null
+SUB,Fried Chicken,Small,6.95,null
+SUB,Veggie,Small,6.95,null
+SUB,Cheese,Large,7.95,null
+SUB,Italian,Large,7.95,null
+SUB,Ham + Cheese,Large,7.95,null
+SUB,Meatball,Large,7.95,null
+SUB,Tuna,Large,7.95,null
+SUB,Turkey,Large,8.5,null
+SUB,Chicken Parmigiana,Large,8.5,null
+SUB,Eggplant Parmigiana,Large,7.95,null
+SUB,Steak,Large,7.95,null
+SUB,Steak + Cheese,Large,8.5,null
+SUB,"Sausage, Peppers & Onions",Large,8.5,null
+SUB,Hamburger,Large,6.95,null
+SUB,Cheeseburger,Large,7.45,null
+SUB,Fried Chicken,Large,8.5,null
+SUB,Veggie,Large,8.5,null
+PST,Baked Ziti w/Meatballs,null,8.75,null
+PST,Baked Ziti w/Chicken,null,9.75,null
+SAL,Greek Salad,null,8.25,null
+SAL,Antipasto,null,8.25,null
+SAL,Salad w/Tuna,null,8.25,null
+PLT,Greek Salad,Small,45,null
+PLT,Antipasto,Small,45,null
+PLT,Baked Ziti,Small,35,null
+PLT,Meatball Parm,Small,45,null
+PLT,Chicken Parm,Small,45,null
+PLT,Garden Salad,Large,60,null
+PLT,Greek Salad,Large,70,null
+PLT,Antipasto,Large,70,null
+PLT,Baked Ziti,Large,60,null
+PLT,Meatball Parm,Large,70,null
+PLT,Chicken Parm,Large,80,null
