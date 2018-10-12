@@ -1,11 +1,14 @@
 from django.contrib import admin
 
 # Register your models here.
-from .models import PizzaMenuItem, SubMenuItem, PastaMenuItem, SaladMenuItem, PlatterMenuItem
+from .models import PizzaMenuItem, SubMenuItem, PastaMenuItem, SaladMenuItem, PlatterMenuItem, ToppingMenuItem
 
 class SimpleMenuItemAdmin(admin.ModelAdmin):
 	list_display = ('item_name', 'price')
 	fields = ['item_name', 'price']
+
+class ToppingMenuItemAdmin(admin.ModelAdmin):
+	fields = ['item_name']
 
 class SizeMenuItemAdmin(admin.ModelAdmin):
 	#for items with size
@@ -25,3 +28,4 @@ admin.site.register(SubMenuItem, SizeMenuItemAdmin)
 admin.site.register(PastaMenuItem, SimpleMenuItemAdmin)
 admin.site.register(SaladMenuItem, SimpleMenuItemAdmin)
 admin.site.register(PlatterMenuItem, SizeMenuItemAdmin)
+admin.site.register(ToppingMenuItem, ToppingMenuItemAdmin)

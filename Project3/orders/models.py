@@ -78,7 +78,11 @@ class ToppingMenuItem(models.Model):
 		verbose_name = "Topping Menu Item"
 
 	#Topping Name
-	name = models.CharField(max_length=100);
+	item_name = models.CharField(max_length=100);
+
+	#"toString method"
+	def __str__(self):
+		return str(f"TP - {self.item_name}");
 
 class SubMenuItem(MenuItem):
 	class Meta:
