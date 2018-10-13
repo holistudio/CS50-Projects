@@ -1,10 +1,43 @@
 <!DOCTYPE html>
 <html>
     <head>
-        <title>PizzaHub</title>
+    	<title>PizzaHub</title>
+        <meta charset="utf-8"/>
+    	<link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.1.3/css/bootstrap.min.css" integrity="sha384-MCw98/SFnGE8fJT3GXwEOngsV7Zt27NXFoaoApmYm81iuXoPkFOJwJ8ERdknLPMO" crossorigin="anonymous">
+    	<style type="text/css">
+
+    	</style>
     </head>
     <body>
-        {% block body %}
-        {% endblock %}
+    	<div class="container">
+            <a id="title" href="{% url 'orders:index' %}"><h1>PizzaHub</h1></a>
+            <nav class="navbar navbar-expand-lg navbar-light bg-light mb-5">
+                <div class="collapse navbar-collapse">
+                   <ul class="navbar-nav mr-auto">
+                    {% if user.is_authenticated %}
+                    <li class="navbar-text">
+                        {{ user.username }} |
+                    </li>
+                    <li class="nav-item">
+                        <a href="{% url 'orders:logout' %}" class="nav-link">Log Out</a>
+                    </li>
+                    {% else %}
+
+                    <li class="nav-item">
+                        <a class="nav-link" href="{% url 'orders:login' %}">Log In</a>
+                    </li>
+                   	<li class="nav-item">
+                        <a href="" class="nav-link">Register</a>
+                    </li>
+                    {% endif %}
+
+                </ul> 
+                </div>
+                
+            </nav>
+            {% block body %}
+        	{% endblock %}
+        </div>
+        
     </body>
 </html>
