@@ -17,9 +17,9 @@
             <input type="password" class="form-control" name="password" placeholder="Password">
         </div>
         <div class="form-group">
-            <button class="btn btn-primary" type="submit">Log In</button>
+            <input class="btn btn-primary" type="submit" value="Log In">
         </div>
 	</form>
-	<p>New User? Register <a href="">here</a>.</p>
+	<p>New User? Register <a href="{% url 'orders:register' %}">here</a>.</p>
 </div>
 {% endblock %}
