@@ -45,6 +45,7 @@ class MenuItem(models.Model):
 class PizzaMenuItem(MenuItem):
 	class Meta:
 		verbose_name = "Pizza Menu Item"
+		unique_together = ('item_type','item_name','size','topping_sel')
 
 	item_type = models.CharField(max_length=3, choices = ITEM_TYPE_CHOICES, default = PIZZA);
 
@@ -78,7 +79,7 @@ class ToppingMenuItem(models.Model):
 		verbose_name = "Topping Menu Item"
 
 	#Topping Name
-	item_name = models.CharField(max_length=100);
+	item_name = models.CharField(max_length=100, unique = True);
 
 	#"toString method"
 	def __str__(self):
@@ -87,6 +88,7 @@ class ToppingMenuItem(models.Model):
 class SubMenuItem(MenuItem):
 	class Meta:
 		verbose_name = "Sub Menu Item"
+		unique_together = ('item_type','item_name','size')
 
 	item_type = models.CharField(max_length=3, choices = ITEM_TYPE_CHOICES, default = SUB);
 	#Sub Size (Small/Large)
@@ -95,17 +97,20 @@ class SubMenuItem(MenuItem):
 class SaladMenuItem(MenuItem):
 	class Meta:
 		verbose_name = "Salad Menu Item"
+		unique_together = ('item_type','item_name')
 	item_type = models.CharField(max_length=3, choices = ITEM_TYPE_CHOICES, default = SALAD);
 
 class PastaMenuItem(MenuItem):
 	class Meta:
 		verbose_name = "Pasta Menu Item"
+		unique_together = ('item_type','item_name')
 	item_type = models.CharField(max_length=3, choices = ITEM_TYPE_CHOICES, default = PASTA);
 
 
 class PlatterMenuItem(MenuItem):
 	class Meta:
 		verbose_name = "Platter Menu Item"
+		unique_together = ('item_type','item_name','size')
 	item_type = models.CharField(max_length=3, choices = ITEM_TYPE_CHOICES, default = PLATTER);
 	#Platter Size (Small/Large)
 	size = models.CharField(max_length=1, choices = SIZE_CHOICES, default = SMALL)
