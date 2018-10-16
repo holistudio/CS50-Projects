@@ -1,4 +1,6 @@
 from django.db import models
+from django.core.validators import MinValueValidator
+from decimal import *
 
 #Item Type (Pizza/Sub/Pasta/Salad/Platter)
 PIZZA = 'PZA'
@@ -31,7 +33,7 @@ class MenuItem(models.Model):
 
 	item_name = models.CharField(max_length=100);
 
-	price = models.DecimalField(max_digits=5, decimal_places=2)
+	price = models.DecimalField(max_digits=5, decimal_places=2,validators=[MinValueValidator(Decimal('0.00'))])
 
 	#"toString method"
 	def __str__(self):
