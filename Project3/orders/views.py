@@ -4,11 +4,29 @@ from django.shortcuts import render
 from django.urls import reverse
 from django.contrib.auth.models import User
 from django.db import IntegrityError
+from django.template import loader
+
+from .models import PizzaMenuItem, SubMenuItem, PastaMenuItem, SaladMenuItem, PlatterMenuItem
 
 # Create your views here.
 
 def index(request):
-	return render(request, "orders/index.html")
+	pizza_list = PizzaMenuItem.objects.order_by('item_name', 'topping_sel', 'price').filter(item_name='Regular'); #order by item name then topping then price
+	sicilian_pizza_list = PizzaMenuItem.objects.order_by('item_name', 'topping_sel', 'price').filter(item_name='Sicilian');
+	subs_list = SubMenuItem.objects.order_by('item_name', '-size');
+	pasta_list = PastaMenuItem.objects.order_by('price');
+	salad_list = SaladMenuItem.objects.order_by('price');
+	platter_list = PlatterMenuItem.objects.order_by('item_name', '-size');
+	template = loader.get_template('orders/index.html')
+	context = {
+		'pizza_list': pizza_list,
+		'sicilian_pizza_list': sicilian_pizza_list,
+		'subs_list': subs_list,
+		'pasta_list': pasta_list,
+		'salad_list': salad_list,
+		'platter_list': platter_list,
+	}
+	return HttpResponse(template.render(context, request))
 
 def login_view(request):
 	if request.method == 'GET':

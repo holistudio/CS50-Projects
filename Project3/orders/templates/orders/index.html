@@ -6,78 +6,163 @@
 
 <table class="foodmenu" width="100%">
 	<tbody>
-	    <tr>
-			<th colspan="3">Regular Pizza</th>
-		</tr>
-		<tr>
-			<td></td>
-			<td>Small</td>
-			<td>Large</td>
-		</tr>	      
-		<tr>
-			<td width="50%">Cheese</td>
-			<td width="25%">12.20</td>
-			<td width="25">17.45</td>
-		</tr>	    
+		{% if pizza_list %}
+			<tr>
+				<th colspan="3">Regular Pizza</th>
+			</tr>
+			<tr>
+				<td></td>
+				<td>Small</td>
+				<td>Large</td>
+			</tr>
+			<!-- for each item in pizza_list -->
+			{% for item in pizza_list %}
+				{% if item.size == "S" %}
+					<!-- if item size is small -->
+					<tr>
+					<td width="50%">{{item.get_topping_sel_display}}</td>
+					<td width="25%">{{item.price}}</td>
+				{% endif %}
+				{% if item.size == "L" %}
+					<!-- if item size is large -->
+					<td width="25%">{{item.price}}</td>
+					</tr>	
+				{% endif %}
+				<!-- end if -->
+			{% endfor %}
+
+		{% else %}
+		<tr>No Pizzas!</tr>
+		{% endif %}
+		{% if sicilian_pizza_list %}
+			<tr>
+				<th colspan="3">Sicilian Pizza</th>
+			</tr>
+			<tr>
+				<td></td>
+				<td>Small</td>
+				<td>Large</td>
+			</tr>
+			<!-- for each item in pizza_list -->
+			{% for item in sicilian_pizza_list %}
+				{% if item.size == "S" %}
+					<!-- if item size is small -->
+					<tr>
+					<td width="50%">{{item.get_topping_sel_display}}</td>
+					<td width="25%">{{item.price}}</td>
+				{% endif %}
+				{% if item.size == "L" %}
+					<!-- if item size is large -->
+					<td width="25%">{{item.price}}</td>
+					</tr>	
+				{% endif %}
+				<!-- end if -->
+			{% endfor %}    
+		{% else %}
+		<tr>No Pizzas!</tr>
+		{% endif %}
 	</tbody>
 </table>
-
+<br>
 <table class="foodmenu" width="100%">
 	<tbody>
 		<tr>
 			<th colspan="3">Subs</th>
 		</tr>
+		
+		{% if subs_list %}
 		<tr>
 			<td></td>
 			<td>Small</td>
 			<td>Large</td>
-		</tr>	      
-	    <tr>
-			<td style="text-align: left;" width="50%">Cheese</td>
-			<td width="25%">6.50</td>
-			<td width="25">7.95</td>
-	    </tr>   
+		</tr>
+		{% for item in subs_list %}
+			{% if item.size == "S" %}
+				<!-- if item size is small -->
+				<tr>
+				<td width="50%">{{item.item_name}}</td>
+				<td width="25%">{{item.price}}</td>
+			{% endif %}
+			{% if item.size == "L" %}
+				{% if item.item_name == "Sausage, Peppers & Onions" %}
+					<tr>
+					<td width="50%">{{item.item_name}}</td>
+					<td width="25%"> - </td>
+				{% endif %}
+				<!-- if item size is large -->
+				<td width="25%">{{item.price}}</td>
+				</tr>	
+			{% endif %}	
+		{% endfor %}
+		{% else %}
+		<tr>No Subs!</tr>
+		{% endif %}  
 	</tbody>
 </table>
-
+<br>
 <table class="foodmenu" width="100%">
 	<tbody>
 	<tr>
-		<th colspan="3"><a name="salad">Pasta</a></th>
-	</tr>	      
-	<tr>
-		<td style="text-align: left;" width="50%">Baked Ziti w/Mozzarella</td>
-		<td width="25%">6.50</td>
-	</tr>   
+		<th colspan="3">Pasta</th>
+	</tr>
+	{% if pasta_list %}
+	{% for item in pasta_list %}
+		<tr>
+			<td style="text-align: left;" width="50%">{{item.item_name}}</td>
+			<td width="25%">{{item.price}}</td>
+		</tr> 
+	{% endfor %}
+	{% else %}
+	<tr>No Pasta!</tr>
+	{% endif %} 	      
 	</tbody>
 </table>
-
+<br>
 <table class="foodmenu" width="100%">
 	<tbody>
 	<tr>
-		<th colspan="3"><a name="salad">Salads</a></th>
+		<th colspan="3">Salads</th>
 	</tr>	      
-	<tr>
-		<td style="text-align: left;" width="50%">Garden Salad</td>
-		<td width="25%">6.25</td>
-	</tr>   
+	{% if salad_list %}
+	{% for item in salad_list %}
+		<tr>
+			<td style="text-align: left;" width="50%">{{item.item_name}}</td>
+			<td width="25%">{{item.price}}</td>
+		</tr> 
+	{% endfor %}
+	{% else %}
+	<tr>No Salad!</tr>
+	{% endif %} 
 	</tbody>
 </table>
+<br>
 <table class="foodmenu" width="100%">
 	<tbody>
 		<tr>
 			<th colspan="3">Dinner Platters</th>
 		</tr>
+		{% if platter_list %}
 		<tr>
 			<td></td>
 			<td>Small</td>
 			<td>Large</td>
-		</tr>	      
-	    <tr>
-			<td style="text-align: left;" width="50%">Garden Salad</td>
-			<td width="25%">35.00</td>
-			<td width="25">60.00</td>
-	    </tr>   
+		</tr>
+		{% for item in platter_list %}
+			{% if item.size == "S" %}
+				<!-- if item size is small -->
+				<tr>
+				<td width="50%">{{item.item_name}}</td>
+				<td width="25%">{{item.price}}</td>
+			{% endif %}
+			{% if item.size == "L" %}
+				<!-- if item size is large -->
+				<td width="25%">{{item.price}}</td>
+				</tr>	
+			{% endif %}	
+		{% endfor %}
+		{% else %}
+		<tr>No Platters!</tr>
+		{% endif %} 
 	</tbody>
 </table>
 </div>
