@@ -1,2 +1,7 @@
 
 *.sqlite3
+*.sublime-project
+*.sublime-workspace
+*.pyc
+*.pyc
+*.sqlite3
