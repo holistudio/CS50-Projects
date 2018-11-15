@@ -55,11 +55,11 @@ class PizzaMenuItem(MenuItem):
 
 	#Topping Selection	(Cheese 0, 1 topping 1, 2 toppings 2, 3 toppings 3, Special 4)
 	TOPPING_SEL_CHOICES = (
-		('C', "Cheese"),
+		('0', "Cheese"),
 		('1',"1 topping"),
 		('2',"2 toppings"),
 		('3',"3 toppings"),
-		('S',"Special")
+		('4',"Special")
 	)
 	item_type = models.CharField(max_length=3, choices = ITEM_TYPE_CHOICES, default = PIZZA);
 
@@ -67,7 +67,7 @@ class PizzaMenuItem(MenuItem):
 
 	size = models.CharField(max_length=1, choices = SIZE_CHOICES, default = SMALL)
 
-	topping_sel = models.CharField(max_length=1, choices = TOPPING_SEL_CHOICES, default = 'C', verbose_name="Topping Selection")
+	topping_sel = models.CharField(max_length=1, choices = TOPPING_SEL_CHOICES, default = '0', verbose_name="Topping Selection")
 
 	class Meta:
 			verbose_name = "Pizza Menu Item"
@@ -115,3 +115,15 @@ class PlatterMenuItem(MenuItem):
 	class Meta:
 		verbose_name = "Platter Menu Item"
 		unique_together = ('item_type','item_name','size')
+
+#OrderItem
+#shows the base price
+#If it's a pizza with more than zero toppings and not special pizza display the corresponding number of rows for topping dropdown menu
+#If it's a sub, provide add cheese options
+#If it's a steak and cheese sub show check boxes for optional toppings
+#compute the total price based on the add-on's
+#Form will be displayed no matter what to confirm with the user before adding to the shopping cart.
+
+#Shopping Cart (one shopping cart to manny order items)
+#items with total prices
+#compute the total cart price
