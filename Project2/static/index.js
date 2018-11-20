@@ -136,7 +136,13 @@ document.addEventListener('DOMContentLoaded', () => {
     
     //highlight current channel
     if(localStorage.getItem('current-channel')!=""){
-        document.getElementById(`${localStorage.getItem('current-channel')}`).classList.add("bg-primary","text-white");
+        if (document.getElementById(`${localStorage.getItem('current-channel')}`)!=null){
+            document.getElementById(`${localStorage.getItem('current-channel')}`).classList.add("bg-primary","text-white");
+        }
+        else{
+            localStorage.setItem('current-channel', "");
+        }
+        
     }
 
     //display current channel's messages, public or private
@@ -160,6 +166,12 @@ document.addEventListener('DOMContentLoaded', () => {
         document.querySelector('#new-private-channel').hidden = true;
     }
 
+    //on "log out" set username to blank
+    document.querySelector('#logout').onsubmit = () => {
+        localStorage.setItem('username', "");
+        socket.emit('update display name', "");
+    }
+
     socket.on('connect', () => {
 
         //determine if it's the user's browser's first time since server is up and running
@@ -169,11 +181,7 @@ document.addEventListener('DOMContentLoaded', () => {
             localStorage.setItem('first-entry', 1);
         }
 
-        //on "log out" set username to blank
-        document.querySelector('#logout').onsubmit = () => {
-            localStorage.setItem('username', "");
-            socket.emit('update display name', "");
-        }
+
 
         //change display name when it's submitted
         document.querySelector('#new-name').onsubmit = () => {
