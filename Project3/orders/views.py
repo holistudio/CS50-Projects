@@ -37,7 +37,6 @@ def item_display(request):
 		#based on the item's type select the menu with the id and return it as a JSON
 		if item_type=='Pizza':
 			item = PizzaMenuItem.objects.filter(id=item_id);
-			print(item.values()[0])
 	return JsonResponse(item.values()[0]);
 
 def login_view(request):
