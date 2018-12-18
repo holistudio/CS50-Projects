@@ -1,8 +1,56 @@
 {% extends "orders/base.html" %}
 
 {% block body %}
+
+<script type="text/javascript">
+
+</script>
 <div class="container col-10">
 <h2>Menu</h2>
+<div class="modal" id="OrderItemModal">
+	<div class="modal-content">
+    <span class="close">&times;</span>
+		<form id="item-order-form" method="post">
+			{% csrf_token %}
+			<h3 id="menu-item-title"></h3>
+
+			<div id="item-size-options">
+				<h4>Size</h4>
+				<input type="radio" name="size" value="small">  Small<br>
+				<input type="radio" name="size" value="large">  Large<br>
+			</div>
+			<br>
+
+
+
+			<div id="pizza-topping-choices-options">
+				<h4>Topping Choice</h4>
+				<input type="radio" name="topping" value="cheese">Cheese<br>
+				<input type="radio" name="topping" value="one-topping">1 topping <br>
+				<input type="radio" name="topping" value="two-topping">2 topping <br>
+				<input type="radio" name="topping" value="three-topping">3 topping <br>
+				<input type="radio" name="topping" value="special">Special <br>
+			</div>
+			<br>
+			<div id="topping-selection-options">
+				<h4>Toppings</h4>
+				<select class="topping-selection-dropdown">
+					<option value="Pepperoni">Pepperoni</option>
+					<option value="Sausage">Sausage</option>
+					<option value="Mushrooms">Mushrooms</option>
+					<option value="Onions">Onions</option>
+					<option value="Ham">Ham</option>
+				</select>
+			</div>
+			<div id="price-display">
+				<p>Price: <span id="final-price"></span></p>
+			</div>
+			<br>
+			<button type="button" name="submit">Confirm</button>
+		</form>
+  </div>
+</div>
+
 
 <table class="foodmenu" width="100%">
 	<tbody>
@@ -12,8 +60,8 @@
 			</tr>
 			<tr>
 				<td></td>
-				<td>Small</td>
-				<td>Large</td>
+				<td><i>Small</i></td>
+				<td><i>Large</i></td>
 			</tr>
 			<!-- for each item in pizza_list -->
 			{% for item in pizza_list %}
@@ -21,12 +69,12 @@
 					<!-- if item size is small -->
 					<tr>
 					<td width="50%">{{item.get_topping_sel_display}}</td>
-					<td width="25%">{{item.price}}</td>
+					<td class="price" width="25%">{{item.price}} <a href="" class="addItem" id="{{item.get_item_type_display}}{{item.id}}">+</a></td>
 				{% endif %}
 				{% if item.size == "L" %}
 					<!-- if item size is large -->
-					<td width="25%">{{item.price}}</td>
-					</tr>	
+					<td width="25%">{{item.price}} <a href="" class="addItem" id="{{item.id}}">+</a></td>
+					</tr>
 				{% endif %}
 				<!-- end if -->
 			{% endfor %}
@@ -34,14 +82,19 @@
 		{% else %}
 		<tr>No Pizzas!</tr>
 		{% endif %}
+		</tbody>
+	</table>
+	<table class="foodmenu" width="100%">
+		<tbody>
 		{% if sicilian_pizza_list %}
+			<br>
 			<tr>
 				<th colspan="3">Sicilian Pizza</th>
 			</tr>
 			<tr>
 				<td></td>
-				<td>Small</td>
-				<td>Large</td>
+				<td><i>Small</i></td>
+				<td><i>Large</i></td>
 			</tr>
 			<!-- for each item in pizza_list -->
 			{% for item in sicilian_pizza_list %}
@@ -49,15 +102,15 @@
 					<!-- if item size is small -->
 					<tr>
 					<td width="50%">{{item.get_topping_sel_display}}</td>
-					<td width="25%">{{item.price}}</td>
+					<td width="25%">{{item.price}} <a href="" class="addItem" id="{{item.id}}">+</td>
 				{% endif %}
 				{% if item.size == "L" %}
 					<!-- if item size is large -->
-					<td width="25%">{{item.price}}</td>
-					</tr>	
+					<td width="25%">{{item.price}} <a href="" class="addItem" id="{{item.id}}">+</td>
+					</tr>
 				{% endif %}
 				<!-- end if -->
-			{% endfor %}    
+			{% endfor %}
 		{% else %}
 		<tr>No Pizzas!</tr>
 		{% endif %}
@@ -69,19 +122,19 @@
 		<tr>
 			<th colspan="3">Subs</th>
 		</tr>
-		
+
 		{% if subs_list %}
 		<tr>
 			<td></td>
-			<td>Small</td>
-			<td>Large</td>
+			<td><i>Small</i></td>
+			<td><i>Large</i></td>
 		</tr>
 		{% for item in subs_list %}
 			{% if item.size == "S" %}
 				<!-- if item size is small -->
 				<tr>
 				<td width="50%">{{item.item_name}}</td>
-				<td width="25%">{{item.price}}</td>
+				<td width="25%">{{item.price}} <a href="" class="addItem" id="{{item.id}}">+</a></td>
 			{% endif %}
 			{% if item.size == "L" %}
 				{% if item.item_name == "Sausage, Peppers & Onions" %}
@@ -90,13 +143,13 @@
 					<td width="25%"> - </td>
 				{% endif %}
 				<!-- if item size is large -->
-				<td width="25%">{{item.price}}</td>
-				</tr>	
-			{% endif %}	
+				<td width="25%">{{item.price}} <a href="" class="addItem" id="{{item.id}}">+</a></td>
+				</tr>
+			{% endif %}
 		{% endfor %}
 		{% else %}
 		<tr>No Subs!</tr>
-		{% endif %}  
+		{% endif %}
 	</tbody>
 </table>
 <br>
@@ -109,12 +162,12 @@
 	{% for item in pasta_list %}
 		<tr>
 			<td style="text-align: left;" width="50%">{{item.item_name}}</td>
-			<td width="25%">{{item.price}}</td>
-		</tr> 
+			<td width="25%">{{item.price}} <a href="" class="addItem" id="{{item.id}}">+</a></td>
+		</tr>
 	{% endfor %}
 	{% else %}
 	<tr>No Pasta!</tr>
-	{% endif %} 	      
+	{% endif %}
 	</tbody>
 </table>
 <br>
@@ -122,17 +175,17 @@
 	<tbody>
 	<tr>
 		<th colspan="3">Salads</th>
-	</tr>	      
+	</tr>
 	{% if salad_list %}
 	{% for item in salad_list %}
 		<tr>
 			<td style="text-align: left;" width="50%">{{item.item_name}}</td>
-			<td width="25%">{{item.price}}</td>
-		</tr> 
+			<td width="25%">{{item.price}} <a href="" class="addItem" id="{{item.id}}">+</a></td>
+		</tr>
 	{% endfor %}
 	{% else %}
 	<tr>No Salad!</tr>
-	{% endif %} 
+	{% endif %}
 	</tbody>
 </table>
 <br>
@@ -144,26 +197,141 @@
 		{% if platter_list %}
 		<tr>
 			<td></td>
-			<td>Small</td>
-			<td>Large</td>
+			<td><i>Small</i></td>
+			<td><i>Large</i></td>
 		</tr>
 		{% for item in platter_list %}
 			{% if item.size == "S" %}
 				<!-- if item size is small -->
 				<tr>
 				<td width="50%">{{item.item_name}}</td>
-				<td width="25%">{{item.price}}</td>
+				<td width="25%">{{item.price}} <a href="" class="addItem" id="{{item.id}}">+</a></td>
 			{% endif %}
 			{% if item.size == "L" %}
 				<!-- if item size is large -->
-				<td width="25%">{{item.price}}</td>
-				</tr>	
-			{% endif %}	
+				<td width="25%">{{item.price}} <a href="" class="addItem" id="{{item.id}}">+</a></td>
+				</tr>
+			{% endif %}
 		{% endfor %}
 		{% else %}
 		<tr>No Platters!</tr>
-		{% endif %} 
+		{% endif %}
 	</tbody>
 </table>
 </div>
+
+
+<script type="text/javascript">
+
+
+	// Get the modal
+	var modal = document.getElementById('OrderItemModal');
+	// Get the <span> element that closes the modal
+	var span = document.getElementsByClassName("close")[0];
+
+	// When the user clicks on <span> (x), close the modal
+	span.onclick = function() {
+	    modal.style.display = "none";
+	}
+
+	// When the user clicks anywhere outside of the modal, close it
+	window.onclick = function(event) {
+	    if (event.target == modal) {
+	        modal.style.display = "none";
+	    }
+	}
+	// document.querySelectorAll('.price').forEach(element => {
+	// 		const plus = document.createElement('a');
+	// 		plus.id=`{{item.get_item_type_display}}{{item.id}}`;
+	// 		plus.classList.add("addItem");
+	// 		plus.innerHTML= '+' ;
+	// 		plus.href="";
+	// 		element.appendChild(plus);
+	// });
+	document.addEventListener('DOMContentLoaded', () => {
+		//on '+' button click
+		document.querySelectorAll('.addItem').forEach(add => {
+				add.onclick = () => {
+						modal.style.display = "block";
+
+						// Initialize new request
+						const request = new XMLHttpRequest();
+
+						//Get the id of the item clicked
+						const addID = add.id;
+
+						let item_type = '';
+						let item_id_char = '';
+						let idChar = '';
+						let splitIndex = 0;
+						let item_id = 0;
+						let numFound = false;
+						var i=0;
+
+						while(numFound==false){
+
+							//for each character in addID
+					    idChar = addID.charAt(i);
+
+					    if(Number.isInteger(parseInt(idChar))){
+					      splitIndex = i;
+					      numFound=true;
+					    }
+					    i=i+1;
+						}
+						//split the element ID into two different strings to be sent to server.
+						item_type = addID.slice(0,splitIndex);
+						item_id_char = addID.slice(splitIndex);
+						//parse to item_id as integer
+						item_id = parseInt(item_id_char);
+
+						//create a request to server with convert route specified, as defined in the flask application
+						request.open('POST', '/menuitem/');
+
+						// Callback function for when request completes
+						request.onload = () => {
+
+								// Extract menu item JSON data from request
+								const menuItem = JSON.parse(request.responseText);
+								console.log(menuItem);
+
+								// Load the form data accordingly
+
+									//display menu item type in the title
+									document.querySelector('#menu-item-title').innerHTML=`${menuItem.item_type}`
+									//if item is not a salad or pasta display size menu options
+									if(menuItem.item_type == 'SAL' || menuItem.item_type == 'PST'){
+
+										document.querySelector('#item-size-options').style.display = "none";
+									}
+
+
+						}
+
+						// Add data to send with request (tell Flask what currency was typed in the form) (this could also have been done with HTML, naming the form input with name="currency")
+						const data = new FormData();
+						data.append('item_type', item_type);
+						data.append('item_id', item_id);
+						// Send request
+						request.setRequestHeader("X-CSRFToken", csrftoken);
+						request.send(data);
+						//stop page from reloading after request is sent
+						return false;
+				};
+
+
+
+
+
+
+
+
+
+				//Up to now, the request hasn't been sent yet. Nor has data been added to the request!
+
+
+
+		});
+	});
+</script>
 {% endblock %}

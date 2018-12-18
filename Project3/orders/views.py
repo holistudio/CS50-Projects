@@ -1,10 +1,12 @@
 from django.contrib.auth import authenticate, login, logout
-from django.http import HttpResponse, HttpResponseRedirect
+from django.http import HttpResponse, HttpResponseRedirect, JsonResponse
 from django.shortcuts import render
 from django.urls import reverse
 from django.contrib.auth.models import User
 from django.db import IntegrityError
 from django.template import loader
+from django.core import serializers
+from django.forms.models import model_to_dict
 
 from .models import PizzaMenuItem, SubMenuItem, PastaMenuItem, SaladMenuItem, PlatterMenuItem
 
@@ -27,6 +29,16 @@ def index(request):
 		'platter_list': platter_list,
 	}
 	return HttpResponse(template.render(context, request))
+
+def item_display(request):
+	if request.method == 'POST':
+		item_type = request.POST["item_type"];
+		item_id = request.POST["item_id"];
+		#based on the item's type select the menu with the id and return it as a JSON
+		if item_type=='Pizza':
+			item = PizzaMenuItem.objects.filter(id=item_id);
+			print(item.values()[0])
+	return JsonResponse(item.values()[0]);
 
 def login_view(request):
 	if request.method == 'GET':
@@ -68,6 +80,6 @@ def register_view(request):
 		else:
 			#add username and password to database
 			user.save()
-			return HttpResponseRedirect(reverse("orders:index"))	
+			return HttpResponseRedirect(reverse("orders:index"))
 	else:
 		return render(request, "orders/register.html")

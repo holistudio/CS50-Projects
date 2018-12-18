@@ -1,0 +1,23 @@
+{% extends "orders/base.html" %}
+
+{% block body %}
+<div class="container col-10">
+<form>
+	{% for item in shopping_cart %}
+		<div name = “item”> {{item.item_name}} - {{item.size}}               <div>{{price}}</div> <a class=“remove”>[-]</a>
+		{% if add_ons %}
+		{% for add_on in add_ons%}
+			<br>    {{ add_on }}
+		{% endfor %}
+		{% endif %}
+		</div>
+	{% endfor %}
+
+	<div></div>
+	Total                          {{total}}
+	<input type=“submit” value=“Checkout”>
+</form>
+
+
+</div>
+{% endblock %}
