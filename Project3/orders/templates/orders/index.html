@@ -28,7 +28,7 @@
 
 			<div id="sub-add-ons-section">
 				<p>Add ons</p>
-				<div class="sub-add-ons">
+				<div id="sub-add-ons">
 					<input class="sub-extra" type="checkbox" name="extra_cheese" value="ExtraCheese"> Extra Cheese <br>
 					<input class="sub-extra steak-cheese-extra" type="checkbox" name="extra_mushrooms" value="ExtraMushrooms"> Mushrooms <br>
 					<input class="sub-extra steak-cheese-extra" type="checkbox" name="extra_green_peppers" value="ExtraGreenPeppers"> Green Peppers <br>
@@ -236,12 +236,13 @@
 					document.querySelector('#item-size').style.display = "initial";
 					//reset topping dropdowns
 					document.querySelector('#topping-dropdowns').innerHTML = "";
-					//remove any steak and cheese sub addons
-					document.querySelectorAll('.sub-add-ons').forEach(ex => {
-						ex.style.display = "initial";
-					}
+
 					//reset sub addon div display to on display
-					document.querySelector('#sub-add-ons').style.display = "initial";
+					document.querySelector('#sub-add-ons-section').style.display = "initial";
+					//remove any steak and cheese sub addons
+					document.querySelectorAll('.sub-extra').forEach(ex => {
+						ex.style.display = "initial";
+					});
 	    }
 	}
 	// document.querySelectorAll('.price').forEach(element => {
@@ -327,9 +328,10 @@
 									// </select>
 									if(numToppings<4){
 										if (numToppings>0){
-											const toppingList = "{{ topping_list }}";
+											let toppingList = "{{ topping_list }}";
+
 											console.log(toppingList);
-											for(i=0; i<numToppings; i++;){
+											for (i=0; i<numToppings; i++){
 												const toppingListDrop = document.createElement('select');
 												toppingListDrop.classList.add("topping-selection-dropdown");
 
@@ -351,7 +353,7 @@
 										//special pizza
 										const specialPizzaToppings = ['Sausage','Green Peppers','Onions','Mushrooms'];
 										const toppingList = document.createElement('ul');
-										for (i=0; i<specialPizzaToppings.length; i++;){
+										for (i=0; i<specialPizzaToppings.length; i++){
 											const topping = document.createElement('li');
 											topping.innerHTML = specialPizzaToppings[i];
 											toppingList.appendChild(topping);
@@ -373,7 +375,7 @@
 									if (menuItem.item_name !='Steak + Cheese'){
 										document.querySelectorAll('.steak-cheese-extra').forEach(ex => {
 											ex.style.display = "none";
-										}
+										});
 									}
 								}
 
@@ -401,8 +403,8 @@
 					final_price = final_price-0.50;
 				}
 				document.querySelector('#final-price').innerHTML = `${final_price}`;
-			}
-		}
+			};
+		});
 	});
 </script>
 {% endblock %}
