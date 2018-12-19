@@ -14,38 +14,32 @@
 			{% csrf_token %}
 			<h3 id="menu-item-title"></h3>
 
-			<div id="item-size-options">
-				<h4>Size</h4>
-				<input type="radio" name="size" value="small">  Small<br>
-				<input type="radio" name="size" value="large">  Large<br>
-			</div>
-			<br>
+			<p id="item-size-section">Size: <span id="item-size-display"></span></p>
+
+			<p id="topping-sel-section">Topping Choice: <span id="topping-sel-display"></span></p>
 
 
+			<div id="topping-dropdown-section">
+				<p>Toppings: </p>
+				<div id="topping-dropdowns">
 
-			<div id="pizza-topping-choices-options">
-				<h4>Topping Choice</h4>
-				<input type="radio" name="topping" value="cheese">Cheese<br>
-				<input type="radio" name="topping" value="one-topping">1 topping <br>
-				<input type="radio" name="topping" value="two-topping">2 topping <br>
-				<input type="radio" name="topping" value="three-topping">3 topping <br>
-				<input type="radio" name="topping" value="special">Special <br>
+				</div>
 			</div>
-			<br>
-			<div id="topping-selection-options">
-				<h4>Toppings</h4>
-				<select class="topping-selection-dropdown">
-					<option value="Pepperoni">Pepperoni</option>
-					<option value="Sausage">Sausage</option>
-					<option value="Mushrooms">Mushrooms</option>
-					<option value="Onions">Onions</option>
-					<option value="Ham">Ham</option>
-				</select>
+
+			<div id="sub-add-ons-section">
+				<p>Add ons</p>
+				<div class="sub-add-ons">
+					<input class="sub-extra" type="checkbox" name="extra_cheese" value="ExtraCheese"> Extra Cheese <br>
+					<input class="sub-extra steak-cheese-extra" type="checkbox" name="extra_mushrooms" value="ExtraMushrooms"> Mushrooms <br>
+					<input class="sub-extra steak-cheese-extra" type="checkbox" name="extra_green_peppers" value="ExtraGreenPeppers"> Green Peppers <br>
+					<input class="sub-extra steak-cheese-extra" type="checkbox" name="extra_onions" value="ExtraOnions"> Onions <br>
+				</div>
+
 			</div>
-			<div id="price-display">
-				<p>Price: <span id="final-price"></span></p>
-			</div>
-			<br>
+
+			<p id="price-section">Price: <span id="final-price"></span></p>
+
+
 			<button type="button" name="submit">Confirm</button>
 		</form>
   </div>
@@ -73,7 +67,7 @@
 				{% endif %}
 				{% if item.size == "L" %}
 					<!-- if item size is large -->
-					<td width="25%">{{item.price}} <a href="" class="addItem" id="{{item.id}}">+</a></td>
+					<td width="25%">{{item.price}} <a href="" class="addItem" id="{{item.get_item_type_display}}{{item.id}}">+</a></td>
 					</tr>
 				{% endif %}
 				<!-- end if -->
@@ -102,11 +96,11 @@
 					<!-- if item size is small -->
 					<tr>
 					<td width="50%">{{item.get_topping_sel_display}}</td>
-					<td width="25%">{{item.price}} <a href="" class="addItem" id="{{item.id}}">+</td>
+					<td width="25%">{{item.price}} <a href="" class="addItem" id="{{item.get_item_type_display}}{{item.id}}">+</td>
 				{% endif %}
 				{% if item.size == "L" %}
 					<!-- if item size is large -->
-					<td width="25%">{{item.price}} <a href="" class="addItem" id="{{item.id}}">+</td>
+					<td width="25%">{{item.price}} <a href="" class="addItem" id="{{item.get_item_type_display}}{{item.id}}">+</td>
 					</tr>
 				{% endif %}
 				<!-- end if -->
@@ -134,7 +128,7 @@
 				<!-- if item size is small -->
 				<tr>
 				<td width="50%">{{item.item_name}}</td>
-				<td width="25%">{{item.price}} <a href="" class="addItem" id="{{item.id}}">+</a></td>
+				<td width="25%">{{item.price}} <a href="" class="addItem" id="{{item.get_item_type_display}}{{item.id}}">+</a></td>
 			{% endif %}
 			{% if item.size == "L" %}
 				{% if item.item_name == "Sausage, Peppers & Onions" %}
@@ -143,7 +137,7 @@
 					<td width="25%"> - </td>
 				{% endif %}
 				<!-- if item size is large -->
-				<td width="25%">{{item.price}} <a href="" class="addItem" id="{{item.id}}">+</a></td>
+				<td width="25%">{{item.price}} <a href="" class="addItem" id="{{item.get_item_type_display}}{{item.id}}">+</a></td>
 				</tr>
 			{% endif %}
 		{% endfor %}
@@ -162,7 +156,7 @@
 	{% for item in pasta_list %}
 		<tr>
 			<td style="text-align: left;" width="50%">{{item.item_name}}</td>
-			<td width="25%">{{item.price}} <a href="" class="addItem" id="{{item.id}}">+</a></td>
+			<td width="25%">{{item.price}} <a href="" class="addItem" id="{{item.get_item_type_display}}{{item.id}}">+</a></td>
 		</tr>
 	{% endfor %}
 	{% else %}
@@ -180,7 +174,7 @@
 	{% for item in salad_list %}
 		<tr>
 			<td style="text-align: left;" width="50%">{{item.item_name}}</td>
-			<td width="25%">{{item.price}} <a href="" class="addItem" id="{{item.id}}">+</a></td>
+			<td width="25%">{{item.price}} <a href="" class="addItem" id="{{item.get_item_type_display}}{{item.id}}">+</a></td>
 		</tr>
 	{% endfor %}
 	{% else %}
@@ -205,11 +199,11 @@
 				<!-- if item size is small -->
 				<tr>
 				<td width="50%">{{item.item_name}}</td>
-				<td width="25%">{{item.price}} <a href="" class="addItem" id="{{item.id}}">+</a></td>
+				<td width="25%">{{item.price}} <a href="" class="addItem" id="{{item.get_item_type_display}}{{item.id}}">+</a></td>
 			{% endif %}
 			{% if item.size == "L" %}
 				<!-- if item size is large -->
-				<td width="25%">{{item.price}} <a href="" class="addItem" id="{{item.id}}">+</a></td>
+				<td width="25%">{{item.price}} <a href="" class="addItem" id="{{item.get_item_type_display}}{{item.id}}">+</a></td>
 				</tr>
 			{% endif %}
 		{% endfor %}
@@ -227,10 +221,10 @@
 	// Get the modal
 	var modal = document.getElementById('OrderItemModal');
 	// Get the <span> element that closes the modal
-	var span = document.getElementsByClassName("close")[0];
+	var spanX = document.getElementsByClassName("close")[0];
 
 	// When the user clicks on <span> (x), close the modal
-	span.onclick = function() {
+	spanX.onclick = function() {
 	    modal.style.display = "none";
 	}
 
@@ -238,6 +232,16 @@
 	window.onclick = function(event) {
 	    if (event.target == modal) {
 	        modal.style.display = "none";
+					//size on display again
+					document.querySelector('#item-size').style.display = "initial";
+					//reset topping dropdowns
+					document.querySelector('#topping-dropdowns').innerHTML = "";
+					//remove any steak and cheese sub addons
+					document.querySelectorAll('.sub-add-ons').forEach(ex => {
+						ex.style.display = "initial";
+					}
+					//reset sub addon div display to on display
+					document.querySelector('#sub-add-ons').style.display = "initial";
 	    }
 	}
 	// document.querySelectorAll('.price').forEach(element => {
@@ -248,7 +252,9 @@
 	// 		plus.href="";
 	// 		element.appendChild(plus);
 	// });
+
 	document.addEventListener('DOMContentLoaded', () => {
+		let final_price = 0;
 		//on '+' button click
 		document.querySelectorAll('.addItem').forEach(add => {
 				add.onclick = () => {
@@ -260,6 +266,7 @@
 						//Get the id of the item clicked
 						const addID = add.id;
 
+						//split the id into two parts: item type and item ID
 						let item_type = '';
 						let item_id_char = '';
 						let idChar = '';
@@ -269,16 +276,18 @@
 						var i=0;
 
 						while(numFound==false){
-
 							//for each character in addID
 					    idChar = addID.charAt(i);
 
+							//at the first integer, store the string index to split into
+							//item type and item ID later
 					    if(Number.isInteger(parseInt(idChar))){
 					      splitIndex = i;
 					      numFound=true;
 					    }
 					    i=i+1;
 						}
+
 						//split the element ID into two different strings to be sent to server.
 						item_type = addID.slice(0,splitIndex);
 						item_id_char = addID.slice(splitIndex);
@@ -296,16 +305,80 @@
 								console.log(menuItem);
 
 								// Load the form data accordingly
+								// display menu item type in the title
+								document.querySelector('#menu-item-title').innerHTML=`${menuItem.item_type}`
+								//see if you can access the item's choice display values, instead of just the values.
 
-									//display menu item type in the title
-									document.querySelector('#menu-item-title').innerHTML=`${menuItem.item_type}`
-									//if item is not a salad or pasta display size menu options
-									if(menuItem.item_type == 'SAL' || menuItem.item_type == 'PST'){
+								//if item is not a salad or pasta display size menu options
+								if(menuItem.item_type == 'SAL' || menuItem.item_type == 'PST'){
+									document.querySelector('#item-size-section').style.display = "none";
+								}
+								else{
+									document.querySelector('#item-size-display').innerHTML = `${menuItem.size}`;
+								}
+								if(menuItem.item_type =='PZA'){
+									document.querySelector('#topping-sel-display').innerHTML = `${menuItem.topping_sel}`;
+									const numToppings = parseInt(`${menuItem.topping_sel}`);
+									//based on the number of toppings of the JSON object returned
+									//insert the correct number of dropdowns
+									//or list the topping for special
+									// <select class="topping-selection-dropdown">
+									// 	<option value="Pepperoni">Pepperoni</option>
+									// </select>
+									if(numToppings<4){
+										if (numToppings>0){
+											const toppingList = "{{ topping_list }}";
+											console.log(toppingList);
+											for(i=0; i<numToppings; i++;){
+												const toppingListDrop = document.createElement('select');
+												toppingListDrop.classList.add("topping-selection-dropdown");
 
-										document.querySelector('#item-size-options').style.display = "none";
+												let toppingListOption = document.createElement('option');
+												for (topping in toppingList){
+													toppingListOption.value="{{ topping.item_name }}";
+													toppingListOption.innerHTML=`${topping.item_name}`;
+													toppingListDrop.appendChild(toppingListOption);
+												}
+												document.querySelector('#topping-dropdowns').appendChild(toppingListDrop);
+											}
+										}
+										else{
+											//cheese pizza
+											document.querySelector('#topping-dropdown-section').style.display = "none";
+										}
+									}
+									else{
+										//special pizza
+										const specialPizzaToppings = ['Sausage','Green Peppers','Onions','Mushrooms'];
+										const toppingList = document.createElement('ul');
+										for (i=0; i<specialPizzaToppings.length; i++;){
+											const topping = document.createElement('li');
+											topping.innerHTML = specialPizzaToppings[i];
+											toppingList.appendChild(topping);
+										}
+										document.querySelector('#topping-dropdowns').appendChild(toppingList);
 									}
 
 
+								}
+								else{
+									document.querySelector('#topping-sel-section').style.display = "none";
+									document.querySelector('#topping-dropdown-section').style.display = "none";
+
+								}
+								if(menuItem.item_type != 'SUB'){
+									document.querySelector('#sub-add-ons-section').style.display = "none";
+								}
+								else{
+									if (menuItem.item_name !='Steak + Cheese'){
+										document.querySelectorAll('.steak-cheese-extra').forEach(ex => {
+											ex.style.display = "none";
+										}
+									}
+								}
+
+								final_price = parseFloat(menuItem.price);
+								document.querySelector('#final-price').innerHTML = `${final_price}`;
 						}
 
 						// Add data to send with request (tell Flask what currency was typed in the form) (this could also have been done with HTML, naming the form input with name="currency")
@@ -318,20 +391,18 @@
 						//stop page from reloading after request is sent
 						return false;
 				};
-
-
-
-
-
-
-
-
-
-				//Up to now, the request hasn't been sent yet. Nor has data been added to the request!
-
-
-
 		});
+		document.querySelectorAll('.sub-extra').forEach(check => {
+			check.onclick = () => {
+				if (check.checked == true) {
+					final_price = final_price+0.50;
+				}
+				else {
+					final_price = final_price-0.50;
+				}
+				document.querySelector('#final-price').innerHTML = `${final_price}`;
+			}
+		}
 	});
 </script>
 {% endblock %}
