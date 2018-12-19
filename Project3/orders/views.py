@@ -8,7 +8,7 @@ from django.template import loader
 from django.core import serializers
 from django.forms.models import model_to_dict
 
-from .models import PizzaMenuItem, SubMenuItem, PastaMenuItem, SaladMenuItem, PlatterMenuItem
+from .models import PizzaMenuItem, SubMenuItem, PastaMenuItem, SaladMenuItem, PlatterMenuItem, ToppingMenuItem
 
 # Create your views here.
 
@@ -49,6 +49,7 @@ def item_display(request):
 			item = PlatterMenuItem.objects.filter(id=item_id);
 		else:
 			#error
+			print('Error: item type not recognized')
 	return JsonResponse(item.values()[0]);
 
 def login_view(request):
