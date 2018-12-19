@@ -19,6 +19,7 @@ def index(request):
 	pasta_list = PastaMenuItem.objects.order_by('price');
 	salad_list = SaladMenuItem.objects.order_by('price');
 	platter_list = PlatterMenuItem.objects.order_by('item_name', '-size');
+	topping_list = ToppingMenuItem.objects;
 	template = loader.get_template('orders/index.html')
 	context = {
 		'pizza_list': pizza_list,
@@ -27,6 +28,7 @@ def index(request):
 		'pasta_list': pasta_list,
 		'salad_list': salad_list,
 		'platter_list': platter_list,
+		'topping_list':topping_list,
 	}
 	return HttpResponse(template.render(context, request))
 
