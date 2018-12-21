@@ -19,7 +19,11 @@ def index(request):
 	pasta_list = PastaMenuItem.objects.order_by('price');
 	salad_list = SaladMenuItem.objects.order_by('price');
 	platter_list = PlatterMenuItem.objects.order_by('item_name', '-size');
-	topping_list = ToppingMenuItem.objects.values('item_name');
+	topping_queryDict = list(ToppingMenuItem.objects.values('item_name'));
+	topping_list = [];
+	for item in topping_queryDict:
+		topping_list.append(item['item_name']);
+	print(topping_list);
 	template = loader.get_template('orders/index.html')
 	context = {
 		'pizza_list': pizza_list,

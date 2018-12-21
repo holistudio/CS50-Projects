@@ -29,10 +29,10 @@
 			<div id="sub-add-ons-section">
 				<p>Add ons</p>
 				<div id="sub-add-ons">
-					<input class="sub-extra" type="checkbox" name="extra_cheese" value="ExtraCheese"> Extra Cheese <br>
-					<input class="sub-extra steak-cheese-extra" type="checkbox" name="extra_mushrooms" value="ExtraMushrooms"> Mushrooms <br>
-					<input class="sub-extra steak-cheese-extra" type="checkbox" name="extra_green_peppers" value="ExtraGreenPeppers"> Green Peppers <br>
-					<input class="sub-extra steak-cheese-extra" type="checkbox" name="extra_onions" value="ExtraOnions"> Onions <br>
+					<p><input class="sub-extra" type="checkbox" name="extra_cheese" value="ExtraCheese"> Extra Cheese </p>
+					<p class="steak-cheese-extra"><input class="sub-extra" type="checkbox" name="extra_mushrooms" value="ExtraMushrooms"> Mushrooms </p>
+					<p class="steak-cheese-extra"><input class="sub-extra" type="checkbox" name="extra_green_peppers" value="ExtraGreenPeppers"> Green Peppers </p>
+					<p class="steak-cheese-extra"><input class="sub-extra" type="checkbox" name="extra_onions" value="ExtraOnions"> Onions </p>
 				</div>
 
 			</div>
@@ -223,26 +223,43 @@
 	// Get the <span> element that closes the modal
 	var spanX = document.getElementsByClassName("close")[0];
 
+	function resetOrderForm(){
+		//size on display again
+		document.querySelector('#item-size-section').style.display = "block";
+		document.querySelector('#item-size-display').innerHTML = "";
+
+		document.querySelector('#topping-sel-section').style.display = "block";
+
+		//reset topping dropdowns
+		document.querySelector('#topping-dropdown-section').style.display = "block";
+		document.querySelector('#topping-dropdowns').innerHTML = "";
+
+		//reset sub addon div display to on display
+		document.querySelector('#sub-add-ons-section').style.display = "block";
+		//uncheck sub extras
+		document.querySelectorAll('.sub-extra').forEach(ex => {
+			ex.checked = false;
+		});
+		//remove any steak and cheese sub addons
+		document.querySelectorAll('.steak-cheese-extra').forEach(ex => {
+			ex.style.display = "block";
+		});
+		document.querySelector('#final-price').innerHTML = "";
+	}
 	// When the user clicks on <span> (x), close the modal
 	spanX.onclick = function() {
+			resetOrderForm();
 	    modal.style.display = "none";
 	}
 
 	// When the user clicks anywhere outside of the modal, close it
 	window.onclick = function(event) {
 	    if (event.target == modal) {
-	        modal.style.display = "none";
-					//size on display again
-					document.querySelector('#item-size').style.display = "initial";
-					//reset topping dropdowns
-					document.querySelector('#topping-dropdowns').innerHTML = "";
 
-					//reset sub addon div display to on display
-					document.querySelector('#sub-add-ons-section').style.display = "initial";
-					//remove any steak and cheese sub addons
-					document.querySelectorAll('.sub-extra').forEach(ex => {
-						ex.style.display = "initial";
-					});
+
+
+					resetOrderForm();
+					modal.style.display = "none";
 	    }
 	}
 	// document.querySelectorAll('.price').forEach(element => {
@@ -255,6 +272,12 @@
 	// });
 
 	document.addEventListener('DOMContentLoaded', () => {
+		let toppingList = []
+
+		{% for item in topping_list %}
+			toppingList.push('{{item}}');
+		{% endfor %}
+
 		let final_price = 0;
 		//on '+' button click
 		document.querySelectorAll('.addItem').forEach(add => {
@@ -320,6 +343,7 @@
 								if(menuItem.item_type =='PZA'){
 									document.querySelector('#topping-sel-display').innerHTML = `${menuItem.topping_sel}`;
 									const numToppings = parseInt(`${menuItem.topping_sel}`);
+
 									//based on the number of toppings of the JSON object returned
 									//insert the correct number of dropdowns
 									//or list the topping for special
@@ -328,20 +352,20 @@
 									// </select>
 									if(numToppings<4){
 										if (numToppings>0){
-											let toppingList = "{{ topping_list }}";
 
-											console.log(toppingList);
+
 											for (i=0; i<numToppings; i++){
 												const toppingListDrop = document.createElement('select');
+												const space = document.createElement('p');
 												toppingListDrop.classList.add("topping-selection-dropdown");
-
-												let toppingListOption = document.createElement('option');
-												for (topping in toppingList){
-													toppingListOption.value="{{ topping.item_name }}";
-													toppingListOption.innerHTML=`${topping.item_name}`;
+												for (j=0; j<toppingList.length; j++){
+													var toppingListOption = document.createElement('option');
+													toppingListOption.value=toppingList[j];
+													toppingListOption.innerHTML=toppingList[j];
 													toppingListDrop.appendChild(toppingListOption);
 												}
-												document.querySelector('#topping-dropdowns').appendChild(toppingListDrop);
+												space.appendChild(toppingListDrop)
+												document.querySelector('#topping-dropdowns').append(space);
 											}
 										}
 										else{
@@ -358,7 +382,7 @@
 											topping.innerHTML = specialPizzaToppings[i];
 											toppingList.appendChild(topping);
 										}
-										document.querySelector('#topping-dropdowns').appendChild(toppingList);
+										document.querySelector('#topping-dropdowns').append(toppingList);
 									}
 
 
@@ -372,6 +396,7 @@
 									document.querySelector('#sub-add-ons-section').style.display = "none";
 								}
 								else{
+
 									if (menuItem.item_name !='Steak + Cheese'){
 										document.querySelectorAll('.steak-cheese-extra').forEach(ex => {
 											ex.style.display = "none";
@@ -380,7 +405,7 @@
 								}
 
 								final_price = parseFloat(menuItem.price);
-								document.querySelector('#final-price').innerHTML = `${final_price}`;
+								document.querySelector('#final-price').innerHTML = `${final_price.toFixed(2)}`;
 						}
 
 						// Add data to send with request (tell Flask what currency was typed in the form) (this could also have been done with HTML, naming the form input with name="currency")
@@ -397,12 +422,12 @@
 		document.querySelectorAll('.sub-extra').forEach(check => {
 			check.onclick = () => {
 				if (check.checked == true) {
-					final_price = final_price+0.50;
+					final_price = (final_price+0.50);
 				}
 				else {
-					final_price = final_price-0.50;
+					final_price = (final_price-0.50);
 				}
-				document.querySelector('#final-price').innerHTML = `${final_price}`;
+				document.querySelector('#final-price').innerHTML = `${final_price.toFixed(2)}`;
 			};
 		});
 	});
