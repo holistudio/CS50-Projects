@@ -119,18 +119,23 @@ class PlatterMenuItem(MenuItem):
 
 #Shopping Cart (one shopping cart to many order items)
 class ShoppingCart (models.Model):
-#user
+	#user
 	user = models.OneToOneField(
 		User,
 		on_delete=models.CASCADE,
 		primary_key=True,
 	);
-#compute the total cart price
-	total_cost = models.DecimalField(max_digits=5, decimal_places=2,validators=[MinValueValidator(Decimal('0.00'))]);
+	#compute the total cart price
+	total_cost = models.DecimalField(max_digits=5, default = Decimal('0.00'),decimal_places=2,validators=[MinValueValidator(Decimal('0.00'))]);
+	class Meta:
+		verbose_name = "Shopping Cart"
+
+	def __str__(self):
+		return str(f"{self.user.username} - {self.total_cost}");
 
 #OrderItem
 class OrderItem (models.Model):
-#shows the final price
+	#final price includes the list of price of add ons
 	final_price = models.DecimalField(max_digits=5, decimal_places=2,validators=[MinValueValidator(Decimal('0.00'))]);
 
 	add_ons = models.CharField(max_length=100); #list of add ons for pizza or subs
@@ -138,9 +143,3 @@ class OrderItem (models.Model):
 	comments = models.CharField(max_length=300);
 
 	shopping_cart = models.ForeignKey(ShoppingCart, on_delete=models.CASCADE);
-
-#If it's a pizza with more than zero toppings and not special pizza display the corresponding number of rows for topping dropdown menu
-#If it's a sub, provide add cheese options
-#If it's a steak and cheese sub show check boxes for optional toppings
-#compute the total price based on the add-on's
-#Form will be displayed no matter what to confirm with the user before adding to the shopping cart.
