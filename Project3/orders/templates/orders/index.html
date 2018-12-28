@@ -10,7 +10,7 @@
 <div class="modal" id="OrderItemModal">
 	<div class="modal-content">
     <span class="close">&times;</span>
-		<form id="item-order-form" method="post">
+		<form id="item-order-form" action="{% url 'orders:additem' %}" method="post">
 			{% csrf_token %}
 			<h3 id="menu-item-title"></h3>
 
@@ -40,7 +40,7 @@
 			<p id="price-section">Price: <span id="final-price"></span></p>
 
 
-			<button type="button" name="submit">Confirm</button>
+			<button class="btn btn-primary" type="submit" name="submit" id="add-cart-button">Add to Cart</button>
 		</form>
   </div>
 </div>
@@ -255,9 +255,6 @@
 	// When the user clicks anywhere outside of the modal, close it
 	window.onclick = function(event) {
 	    if (event.target == modal) {
-
-
-
 					resetOrderForm();
 					modal.style.display = "none";
 	    }
@@ -272,12 +269,13 @@
 	// });
 
 	document.addEventListener('DOMContentLoaded', () => {
+		//add topping list to drop down menus
 		let toppingList = []
-
 		{% for item in topping_list %}
 			toppingList.push('{{item}}');
 		{% endfor %}
 
+		//final price to be calculated in the order item form
 		let final_price = 0;
 		//on '+' button click
 		document.querySelectorAll('.addItem').forEach(add => {
@@ -318,7 +316,7 @@
 						//parse to item_id as integer
 						item_id = parseInt(item_id_char);
 
-						//create a request to server with convert route specified, as defined in the flask application
+						//create a request to server with menu item rout
 						request.open('POST', '/menuitem/');
 
 						// Callback function for when request completes
@@ -326,22 +324,21 @@
 
 								// Extract menu item JSON data from request
 								const menuItem = JSON.parse(request.responseText);
-								console.log(menuItem);
 
 								// Load the form data accordingly
 								// display menu item type in the title
-								document.querySelector('#menu-item-title').innerHTML=`${menuItem.item_type}`
+								document.querySelector('#menu-item-title').innerHTML=`${menuItem.item_type} - ${menuItem.item_name}`
 								//see if you can access the item's choice display values, instead of just the values.
 
 								//if item is not a salad or pasta display size menu options
-								if(menuItem.item_type == 'SAL' || menuItem.item_type == 'PST'){
+								if(menuItem.item_type == 'Salad' || menuItem.item_type == 'Pasta'){
 									document.querySelector('#item-size-section').style.display = "none";
 								}
 								else{
 									document.querySelector('#item-size-display').innerHTML = `${menuItem.size}`;
 								}
-								if(menuItem.item_type =='PZA'){
-									document.querySelector('#topping-sel-display').innerHTML = `${menuItem.topping_sel}`;
+								if(menuItem.item_type =='Pizza'){
+									document.querySelector('#topping-sel-display').innerHTML = `${menuItem.topping_sel_display}`;
 									const numToppings = parseInt(`${menuItem.topping_sel}`);
 
 									//based on the number of toppings of the JSON object returned
@@ -392,7 +389,7 @@
 									document.querySelector('#topping-dropdown-section').style.display = "none";
 
 								}
-								if(menuItem.item_type != 'SUB'){
+								if(menuItem.item_type != 'Sub'){
 									document.querySelector('#sub-add-ons-section').style.display = "none";
 								}
 								else{
@@ -430,6 +427,9 @@
 				document.querySelector('#final-price').innerHTML = `${final_price.toFixed(2)}`;
 			};
 		});
+		document.querySelector('#add-cart-button').onclick{
+			//submit form
+		};
 	});
 </script>
 {% endblock %}

@@ -8,7 +8,7 @@ from django.template import loader
 from django.core import serializers
 from django.forms.models import model_to_dict
 
-from .models import PizzaMenuItem, SubMenuItem, PastaMenuItem, SaladMenuItem, PlatterMenuItem, ToppingMenuItem
+from .models import PizzaMenuItem, SubMenuItem, PastaMenuItem, SaladMenuItem, PlatterMenuItem, ToppingMenuItem, ShoppingCart, OrderItem
 
 # Create your views here.
 
@@ -23,7 +23,6 @@ def index(request):
 	topping_list = [];
 	for item in topping_queryDict:
 		topping_list.append(item['item_name']);
-	print(topping_list);
 	template = loader.get_template('orders/index.html')
 	context = {
 		'pizza_list': pizza_list,
@@ -40,21 +39,40 @@ def item_display(request):
 	if request.method == 'POST':
 		item_type = request.POST["item_type"];
 		item_id = request.POST["item_id"];
+		itemJSON = {};
 		#based on the item's type select the menu with the id and return it as a JSON
 		if item_type=='Pizza':
-			item = PizzaMenuItem.objects.filter(id=item_id);
+			item = PizzaMenuItem.objects.get(id=item_id);
+			itemJSON={'size' : item.get_size_display(),
+				'topping_sel': item.topping_sel,
+				'topping_sel_display': item.get_topping_sel_display(),
+				};
 		elif item_type == 'Sub':
-			item = SubMenuItem.objects.filter(id=item_id);
+			item = SubMenuItem.objects.get(id=item_id);
+			itemJSON={'size' : item.get_size_display()}
 		elif item_type=='Pasta':
-			item = PastaMenuItem.objects.filter(id=item_id);
+			item = PastaMenuItem.objects.get(id=item_id);
 		elif item_type=='Salad':
-			item = SaladMenuItem.objects.filter(id=item_id);
+			item = SaladMenuItem.objects.get(id=item_id);
 		elif item_type=='Platter':
-			item = PlatterMenuItem.objects.filter(id=item_id);
+			item = PlatterMenuItem.objects.get(id=item_id);
+			itemJSON={'size' : item.get_size_display()};
 		else:
 			#error
-			print('Error: item type not recognized')
-	return JsonResponse(item.values()[0]);
+			print('Error: item type not recognized');
+		itemJSON['item_type'] = item.get_item_type_display();
+		itemJSON['item_name'] = item.item_name;
+		itemJSON['price'] = item.price;
+	return JsonResponse(itemJSON);
+
+def add_item_to_cart(request):
+	if request.method == 'POST':
+		#get stuff from form
+		#create an order item model instance
+		#add to user's shopping cart model instance
+		#if there isn't a shopping cart, create an instance
+		print('foo');
+	return HttpResponseRedirect(reverse("orders:index"))
 
 def login_view(request):
 	if request.method == 'GET':
@@ -65,13 +83,17 @@ def login_view(request):
 		user = authenticate(request, username=username, password=password)
 		if user is not None:
 			login(request, user)
+			#create a unique shopping cart model instance
+			cart = ShoppingCart(user = user);
+			cart.save();
+			print(cart);
 			return HttpResponseRedirect(reverse("orders:index"))
 		else:
 			return render(request, "orders/login.html", {"message": "Invalid username or password"})
 
 def logout_view(request):
-    logout(request)
-    return HttpResponseRedirect(reverse("orders:index"))
+	logout(request)
+	return HttpResponseRedirect(reverse("orders:index"))
 
 def register_view(request):
 	if request.method =="POST":
