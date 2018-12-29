@@ -124,7 +124,8 @@ class ShoppingCart (models.Model):
 #OrderItem
 class OrderItem (models.Model):
 	#pointer to the item id in the appropriate database based on the item type
-	menu_item = models.ForeignKey(MenuItem, on_delete=models.CASCADE)
+	menu_item = models.ForeignKey(MenuItem, on_delete=models.CASCADE);
+
 	#final price includes the list of price of add ons
 	final_price = models.DecimalField(max_digits=5, decimal_places=2,validators=[MinValueValidator(Decimal('0.00'))]);
 
