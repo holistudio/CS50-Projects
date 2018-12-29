@@ -1,22 +1,22 @@
 PZA,Regular,Small,13.2,1 topping
 PZA,Regular,Small,14.7,2 toppings
 PZA,Regular,Small,15.7,3 toppings
-PZA,Regular,Small,17.25,Special
-PZA,Regular,Large,17.45,Cheese
+PZA,Regular,Small,17.25,4
+PZA,Regular,Large,17.45,0
 PZA,Regular,Large,19.45,1 topping
 PZA,Regular,Large,21.45,2 toppings
 PZA,Regular,Large,23.45,3 toppings
-PZA,Regular,Large,25.45,Special
-PZA,Sicilian,Small,23.45,Cheese
+PZA,Regular,Large,25.45,4
+PZA,Sicilian,Small,23.45,0
 PZA,Sicilian,Small,25.45,1 topping
 PZA,Sicilian,Small,27.45,2 toppings
 PZA,Sicilian,Small,28.45,3 toppings
-PZA,Sicilian,Small,29.45,Special
-PZA,Sicilian,Large,37.7,Cheese
+PZA,Sicilian,Small,29.45,4
+PZA,Sicilian,Large,37.7,0
 PZA,Sicilian,Large,39.7,1 topping
 PZA,Sicilian,Large,41.7,2 toppings
 PZA,Sicilian,Large,43.7,3 toppings
-PZA,Sicilian,Large,44.7,Special
+PZA,Sicilian,Large,44.7,4
 SUB,Italian,Small,6.5,null
 SUB,Ham + Cheese,Small,6.5,null
 SUB,Meatball,Small,6.5,null

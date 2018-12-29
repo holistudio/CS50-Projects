@@ -39,10 +39,8 @@ class MenuItem(models.Model):
 	#"toString method"
 	def __str__(self):
 		return str(f"{self.item_type} - {self.item_name}");
-
 	class Meta:
-		abstract = True
-
+			verbose_name = "Menu Item"
 #PizzaMenuItem (inherit MenuItem)
 class PizzaMenuItem(MenuItem):
 	#Pizza Type (Regular/Sicilian)
@@ -62,9 +60,8 @@ class PizzaMenuItem(MenuItem):
 		('3',"3 toppings"),
 		('4',"Special")
 	)
-	item_type = models.CharField(max_length=3, choices = ITEM_TYPE_CHOICES, default = PIZZA);
 
-	item_name = models.CharField(max_length=100, choices = PIZZA_TYPE_CHOICES, default = REGULAR)
+	pizza_type = models.CharField(max_length=100, choices = PIZZA_TYPE_CHOICES, default = REGULAR)
 
 	size = models.CharField(max_length=1, choices = SIZE_CHOICES, default = SMALL)
 
@@ -72,7 +69,6 @@ class PizzaMenuItem(MenuItem):
 
 	class Meta:
 			verbose_name = "Pizza Menu Item"
-			unique_together = ('item_type','item_name','size','topping_sel')
 
 #ToppingMenuItem (though it is technically a menu item, a topping doesn't have an associated price or "type")
 class ToppingMenuItem(models.Model):
@@ -87,35 +83,27 @@ class ToppingMenuItem(models.Model):
 		return str(f"TP - {self.item_name}");
 
 class SubMenuItem(MenuItem):
-	item_type = models.CharField(max_length=3, choices = ITEM_TYPE_CHOICES, default = SUB);
 
 	size = models.CharField(max_length=1, choices = SIZE_CHOICES, default = SMALL)
 
 	class Meta:
 		verbose_name = "Sub Menu Item"
-		unique_together = ('item_type','item_name','size')
 
 class SaladMenuItem(MenuItem):
-	item_type = models.CharField(max_length=3, choices = ITEM_TYPE_CHOICES, default = SALAD);
 	class Meta:
 		verbose_name = "Salad Menu Item"
-		unique_together = ('item_type','item_name')
 
 class PastaMenuItem(MenuItem):
-	item_type = models.CharField(max_length=3, choices = ITEM_TYPE_CHOICES, default = PASTA);
 	class Meta:
 		verbose_name = "Pasta Menu Item"
-		unique_together = ('item_type','item_name')
 
 
 class PlatterMenuItem(MenuItem):
-	item_type = models.CharField(max_length=3, choices = ITEM_TYPE_CHOICES, default = PLATTER);
 
 	size = models.CharField(max_length=1, choices = SIZE_CHOICES, default = SMALL)
 
 	class Meta:
 		verbose_name = "Platter Menu Item"
-		unique_together = ('item_type','item_name','size')
 
 #Shopping Cart (one shopping cart to many order items)
 class ShoppingCart (models.Model):
@@ -135,6 +123,8 @@ class ShoppingCart (models.Model):
 
 #OrderItem
 class OrderItem (models.Model):
+	#pointer to the item id in the appropriate database based on the item type
+	menu_item = models.ForeignKey(MenuItem, on_delete=models.CASCADE)
 	#final price includes the list of price of add ons
 	final_price = models.DecimalField(max_digits=5, decimal_places=2,validators=[MinValueValidator(Decimal('0.00'))]);
 
