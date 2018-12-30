@@ -119,6 +119,16 @@ def add_item_to_cart(request):
 
 	return HttpResponseRedirect(reverse("orders:index"))
 
+def shopping_cart(request):
+	shopping_cart= ShoppingCart.objects.get(user = request.user);
+	shopping_cart_items = OrderItem.objects.filter(shopping_cart=shopping_cart);
+	context = {
+		'shopping_cart': shopping_cart,
+		'shopping_cart_items': shopping_cart_items,
+	}
+	template = loader.get_template('orders/cart.html')
+	return HttpResponse(template.render(context, request));
+
 def login_view(request):
 	if request.method == 'GET':
 		return render(request, "orders/login.html")

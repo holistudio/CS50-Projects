@@ -68,29 +68,29 @@
     <body>
     	<div class="container">
             <a id="title" href="{% url 'orders:index' %}"><h1>PizzaHub</h1></a>
-            <nav class="navbar navbar-expand-lg navbar-light bg-light mb-5">
-                <div class="collapse navbar-collapse">
-                   <ul class="navbar-nav mr-auto">
-                    {% if user.is_authenticated %}
-                    <li class="navbar-text">
-                        {{ user.username }} |
-                    </li>
-                    <li class="nav-item">
-                        <a href="{% url 'orders:logout' %}" class="nav-link">Log Out</a>
-                    </li>
-                    {% else %}
+            <nav class="navbar navbar-expand-lg navbar-light bg-light mb-5 justify-content-between">
+                   <ul class="navbar-nav ">
+                      {% if user.is_authenticated %}
+                      <li class="navbar-text">
+                          {{ user.username }} |
+                      </li>
+                      <li class="nav-item">
+                          <a href="{% url 'orders:logout' %}" class="nav-link">Log Out</a>
+                      </li>
+                      {% else %}
 
-                    <li class="nav-item">
-                        <a class="nav-link" href="{% url 'orders:login' %}">Log In</a>
-                    </li>
-                   	<li class="nav-item">
-                        <a href="{% url 'orders:register' %}" class="nav-link">Register</a>
-                    </li>
-                    {% endif %}
+                      <li class="nav-item">
+                          <a class="nav-link" href="{% url 'orders:login' %}">Log In</a>
+                      </li>
+                     	<li class="nav-item">
+                          <a href="{% url 'orders:register' %}" class="nav-link">Register</a>
+                      </li>
+                      {% endif %}
 
-                </ul>
-                </div>
-
+                    </ul>
+                    <div class="nav-item">
+                      <a href="{% url 'orders:shopping_cart' %}" class="nav-link">Shopping Cart</a>
+                    </div>
             </nav>
             {% block body %}
         	{% endblock %}

@@ -3,19 +3,21 @@
 {% block body %}
 <div class="container col-10">
 <form>
-	{% for item in shopping_cart %}
-		<div name = “item”> {{item.item_name}} - {{item.size}}               <div>{{price}}</div> <a class=“remove”>[-]</a>
-		{% if add_ons %}
-		{% for add_on in add_ons%}
+	{% for item in shopping_cart_items %}
+		{% if item.menu_item.item_type == 'SAL' or item.menu_item.item_type == 'PST'%}
+			<div name = "item"> {{item.menu_item.item_name}}              <div>{{item.final_price}}</div> <a class="remove">[-]</a>
+		{% else %}
+			<div name = "item"> {{item.menu_item.item_name}}  - {{item.menu_item.size}}               <div>{{item.final_price}}</div> <a class="remove">[-]</a>
+		{% endif %}
+		{% for add_on in item.get_add_ons_list %}
 			<br>    {{ add_on }}
 		{% endfor %}
-		{% endif %}
 		</div>
 	{% endfor %}
 
-	<div></div>
-	Total                          {{total}}
-	<input type=“submit” value=“Checkout”>
+	<div>Total: {{shopping_cart.total_cost}}</div>
+
+	<button class="btn btn-primary" type="submit" name="submit">Checkout</button>
 </form>
 
 
