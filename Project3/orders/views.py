@@ -111,7 +111,7 @@ def add_item_to_cart(request):
 				new_cart.save();
 				cart = new_cart;
 		o = OrderItem(menu_item=menu_item, final_price = final_price, add_ons = add_ons, shopping_cart = cart);
-
+		o.save();
 		#if there isn't a shopping cart, create an instance
 
 	return HttpResponseRedirect(reverse("orders:index"))
