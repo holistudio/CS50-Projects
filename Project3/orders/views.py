@@ -8,7 +8,7 @@ from django.template import loader
 from django.core import serializers
 from django.forms.models import model_to_dict
 
-from .models import PizzaMenuItem, SubMenuItem, PastaMenuItem, SaladMenuItem, PlatterMenuItem, ToppingMenuItem, ShoppingCart, OrderItem
+from .models import MenuItem, PizzaMenuItem, SubMenuItem, PastaMenuItem, SaladMenuItem, PlatterMenuItem, ToppingMenuItem, ShoppingCart, OrderItem
 
 # Create your views here.
 
@@ -67,11 +67,53 @@ def item_display(request):
 
 def add_item_to_cart(request):
 	if request.method == 'POST':
+
+
 		#get stuff from form
+		menu_item = MenuItem.objects.get(id = request.POST["menu_item_id"]);
+		# print(menu_item.pizzamenuitem.topping_sel);
+
+		add_ons = '';
+		# pizza add ons
+		if menu_item.item_type=='PZA':
+			num_toppings = int(menu_item.pizzamenuitem.topping_sel);
+			if num_toppings>0:
+				if num_toppings<4:
+					for i in range(0,int(menu_item.pizzamenuitem.topping_sel)):
+						key = str(f"topping{i+1}");
+						add_ons = str(f"{add_ons}{request.POST[key]}, ");
+				else:
+					add_ons = str(f"{add_ons}Sausage, Green Peppers, Onions, Mushrooms, ");
+
+		#sub add ons
+		steak_sub_add_ons = ['extra_mushrooms','extra_green_peppers','extra_onions']
+		if menu_item.item_type=='SUB':
+			if 'extra_cheese' in request.POST.keys():
+				add_ons = str(f"{add_ons}Extra Cheese, ");
+
+			if menu_item.item_name == 'Steak + Cheese':
+				for i in range(0,len(steak_sub_add_ons)):
+					if steak_sub_add_ons[i] in request.POST.keys():
+						add_ons = str(f"{add_ons}{request.POST[steak_sub_add_ons[i]]}, ");
+
+		#final price from form
+		final_price = request.POST['price'];
+
 		#create an order item model instance
-		#add to user's shopping cart model instance
+		if request.user.is_authenticated:
+
+			cart_query = ShoppingCart.objects.filter(user = request.user);
+
+			if len(cart_query)>0:
+				cart=cart_query[0];
+			else:
+				new_cart = ShoppingCart(user=request.user);
+				new_cart.save();
+				cart = new_cart;
+		o = OrderItem(menu_item=menu_item, final_price = final_price, add_ons = add_ons, shopping_cart = cart);
+
 		#if there isn't a shopping cart, create an instance
-		print('foo');
+
 	return HttpResponseRedirect(reverse("orders:index"))
 
 def login_view(request):
@@ -86,7 +128,6 @@ def login_view(request):
 			#create a unique shopping cart model instance
 			cart = ShoppingCart(user = user);
 			cart.save();
-			print(cart);
 			return HttpResponseRedirect(reverse("orders:index"))
 		else:
 			return render(request, "orders/login.html", {"message": "Invalid username or password"})
