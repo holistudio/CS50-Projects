@@ -35,10 +35,18 @@ class MenuItem(models.Model):
 	item_name = models.CharField(max_length=100);
 
 	price = models.DecimalField(max_digits=5, decimal_places=2,validators=[MinValueValidator(Decimal('0.00'))])
-
-	#"toString method"
 	def __str__(self):
-		return str(f"{self.item_type} - {self.item_name}");
+		try:
+			return str(f"{self.item_type} - {self.item_name} - {self.pizzamenuitem.size} - {self.pizzamenuitem.topping_sel}");
+		except PizzaMenuItem.DoesNotExist:
+			try:
+				return str(f"{self.item_type} - {self.item_name} - {self.submenuitem.size}");
+			except SubMenuItem.DoesNotExist:
+				try:
+					return str(f"{self.item_type} - {self.item_name} - {self.plattermenuitem.size}");
+				except:
+					return str(f"{self.item_type} - {self.item_name}");
+
 	class Meta:
 			verbose_name = "Menu Item"
 #PizzaMenuItem (inherit MenuItem)
@@ -66,6 +74,9 @@ class PizzaMenuItem(MenuItem):
 	size = models.CharField(max_length=1, choices = SIZE_CHOICES, default = SMALL)
 
 	topping_sel = models.CharField(max_length=1, choices = TOPPING_SEL_CHOICES, default = '0', verbose_name="Topping Selection")
+	#"toString method"
+	def __str__(self):
+		return str(f"{self.item_type} - {self.item_name} - {self.size} - {self.topping_sel}");
 
 	class Meta:
 			verbose_name = "Pizza Menu Item"
@@ -85,15 +96,20 @@ class ToppingMenuItem(models.Model):
 class SubMenuItem(MenuItem):
 
 	size = models.CharField(max_length=1, choices = SIZE_CHOICES, default = SMALL)
-
+	def __str__(self):
+		return str(f"{self.item_type} - {self.item_name} - {self.size}");
 	class Meta:
 		verbose_name = "Sub Menu Item"
 
 class SaladMenuItem(MenuItem):
+	def __str__(self):
+		return str(f"{self.item_type} - {self.item_name}");
 	class Meta:
 		verbose_name = "Salad Menu Item"
 
 class PastaMenuItem(MenuItem):
+	def __str__(self):
+		return str(f"{self.item_type} - {self.item_name}");
 	class Meta:
 		verbose_name = "Pasta Menu Item"
 
@@ -104,6 +120,8 @@ class PlatterMenuItem(MenuItem):
 
 	class Meta:
 		verbose_name = "Platter Menu Item"
+	def __str__(self):
+		return str(f"{self.item_type} - {self.item_name} - {self.size}");
 
 #Shopping Cart (one shopping cart to many order items)
 class ShoppingCart (models.Model):

@@ -26,7 +26,7 @@ class PizzaMenuItemAdmin(admin.ModelAdmin):
 
 
 class OrderItemAdmin(admin.ModelAdmin):
-	list_display = ('id','final_price');
+	list_display = ('id', 'menu_item', 'add_ons', 'final_price', 'shopping_cart');
 	fields = ['menu_item', 'add_ons', 'final_price', 'shopping_cart']
 
 class ShoppingCartAdmin(admin.ModelAdmin):
