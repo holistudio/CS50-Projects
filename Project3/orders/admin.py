@@ -24,13 +24,15 @@ class PizzaMenuItemAdmin(admin.ModelAdmin):
 	list_display = ('item_type','item_name', 'pizza_type','size', 'topping_sel', 'price')
 	fields = ['item_type','item_name', 'pizza_type','size', 'topping_sel', 'price']
 
+
 class OrderItemAdmin(admin.ModelAdmin):
-	list_display = ('menu_item', 'add_ons', 'final_price')
-	fields = ['menu_item', 'add_ons', 'final_price']
+	list_display = ('id','final_price');
+	fields = ['menu_item', 'add_ons', 'final_price', 'shopping_cart']
 
 class ShoppingCartAdmin(admin.ModelAdmin):
 	list_display = ('user','total_cost');
 	fields = ['user','total_cost'];
+	#display all order items
 
 admin.site.register(MenuItem, GenMenuItemAdmin)
 admin.site.register(PizzaMenuItem, PizzaMenuItemAdmin)
