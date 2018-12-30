@@ -147,7 +147,11 @@ class OrderItem (models.Model):
 	#final price includes the list of price of add ons
 	final_price = models.DecimalField(max_digits=5, decimal_places=2,validators=[MinValueValidator(Decimal('0.00'))]);
 
-	add_ons = models.CharField(max_length=100); #list of add ons for pizza or subs
+	add_ons = models.CharField(max_length=100); #list of add ons for pizza or subs, separated by commas
+
+	#returns the add ons as an array
+	def get_add_ons_list(self):
+		return self.add_ons.split(',')[0:len(self.add_ons.split(','))-1];
 
 	comments = models.CharField(max_length=300);
 
