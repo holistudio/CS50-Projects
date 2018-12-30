@@ -10,6 +10,7 @@ from django.forms.models import model_to_dict
 
 from .models import MenuItem, PizzaMenuItem, SubMenuItem, PastaMenuItem, SaladMenuItem, PlatterMenuItem, ToppingMenuItem, ShoppingCart, OrderItem
 
+from decimal import *
 # Create your views here.
 
 def index(request):
@@ -110,8 +111,10 @@ def add_item_to_cart(request):
 				new_cart = ShoppingCart(user=request.user);
 				new_cart.save();
 				cart = new_cart;
-		o = OrderItem(menu_item=menu_item, final_price = final_price, add_ons = add_ons, shopping_cart = cart);
-		o.save();
+			o = OrderItem(menu_item=menu_item, final_price = final_price, add_ons = add_ons, shopping_cart = cart);
+			o.save();
+			cart.total_cost = cart.total_cost + Decimal(final_price);
+			cart.save();
 		#if there isn't a shopping cart, create an instance
 
 	return HttpResponseRedirect(reverse("orders:index"))
