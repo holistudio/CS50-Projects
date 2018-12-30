@@ -10,7 +10,7 @@
 <div class="modal" id="OrderItemModal">
 	<div class="modal-content">
     <span class="close">&times;</span>
-		<form id="item-order-form" action="{% url 'orders:additem' %}" method="post">
+		<form id="item-order-form" action="{% url 'orders:add_item_to_cart' %}"method="post">
 			{% csrf_token %}
 			<h3 id="menu-item-title"></h3>
 
@@ -18,6 +18,7 @@
 
 			<p id="topping-sel-section">Topping Choice: <span id="topping-sel-display"></span></p>
 
+			<input id="menu-item-id" name="menu_item_id" value="0" hidden readonly>
 
 			<div id="topping-dropdown-section">
 				<p>Toppings: </p>
@@ -29,15 +30,15 @@
 			<div id="sub-add-ons-section">
 				<p>Add ons</p>
 				<div id="sub-add-ons">
-					<p><input class="sub-extra" type="checkbox" name="extra_cheese" value="ExtraCheese"> Extra Cheese </p>
-					<p class="steak-cheese-extra"><input class="sub-extra" type="checkbox" name="extra_mushrooms" value="ExtraMushrooms"> Mushrooms </p>
-					<p class="steak-cheese-extra"><input class="sub-extra" type="checkbox" name="extra_green_peppers" value="ExtraGreenPeppers"> Green Peppers </p>
-					<p class="steak-cheese-extra"><input class="sub-extra" type="checkbox" name="extra_onions" value="ExtraOnions"> Onions </p>
+					<p><input class="sub-extra" type="checkbox" name="extra_cheese" value="Extra Cheese"> Extra Cheese </p>
+					<p class="steak-cheese-extra"><input class="sub-extra" type="checkbox" name="extra_mushrooms" value="Extra Mushrooms"> Mushrooms </p>
+					<p class="steak-cheese-extra"><input class="sub-extra" type="checkbox" name="extra_green_peppers" value="Extra Green Peppers"> Green Peppers </p>
+					<p class="steak-cheese-extra"><input class="sub-extra" type="checkbox" name="extra_onions" value="Extra Onions"> Onions </p>
 				</div>
 
 			</div>
 
-			<p id="price-section">Price: <span id="final-price"></span></p>
+			<p id="price-section">Price:  <input id="final-price" type="text" name="price" value="0.00" readonly style="border:none"></p>
 
 
 			<button class="btn btn-primary" type="submit" name="submit" id="add-cart-button">Add to Cart</button>
@@ -244,7 +245,7 @@
 		document.querySelectorAll('.steak-cheese-extra').forEach(ex => {
 			ex.style.display = "block";
 		});
-		document.querySelector('#final-price').innerHTML = "";
+		document.querySelector('#final-price').value = "0.00";
 	}
 	// When the user clicks on <span> (x), close the modal
 	spanX.onclick = function() {
@@ -316,7 +317,7 @@
 						//parse to item_id as integer
 						item_id = parseInt(item_id_char);
 
-						//create a request to server with menu item rout
+						//create a request to server with menu item route
 						request.open('POST', '/menuitem/');
 
 						// Callback function for when request completes
@@ -328,6 +329,8 @@
 								// Load the form data accordingly
 								// display menu item type in the title
 								document.querySelector('#menu-item-title').innerHTML=`${menuItem.item_type} - ${menuItem.item_name}`
+								document.querySelector('#menu-item-id').value=`${item_id}`
+								console.log(document.querySelector('#menu-item-id').value)
 								//see if you can access the item's choice display values, instead of just the values.
 
 								//if item is not a salad or pasta display size menu options
@@ -355,6 +358,7 @@
 												const toppingListDrop = document.createElement('select');
 												const space = document.createElement('p');
 												toppingListDrop.classList.add("topping-selection-dropdown");
+												toppingListDrop.name=`topping${i+1}`;
 												for (j=0; j<toppingList.length; j++){
 													var toppingListOption = document.createElement('option');
 													toppingListOption.value=toppingList[j];
@@ -402,7 +406,7 @@
 								}
 
 								final_price = parseFloat(menuItem.price);
-								document.querySelector('#final-price').innerHTML = `${final_price.toFixed(2)}`;
+								document.querySelector('#final-price').value = `${final_price.toFixed(2)}`;
 						}
 
 						// Add data to send with request (tell Flask what currency was typed in the form) (this could also have been done with HTML, naming the form input with name="currency")
@@ -424,12 +428,12 @@
 				else {
 					final_price = (final_price-0.50);
 				}
-				document.querySelector('#final-price').innerHTML = `${final_price.toFixed(2)}`;
+				document.querySelector('#final-price').value = `${final_price.toFixed(2)}`;
 			};
 		});
-		document.querySelector('#add-cart-button').onclick{
-			//submit form
-		};
+		// document.querySelector('#add-cart-button').onclick{
+		// 	//submit form
+		// };
 	});
 </script>
 {% endblock %}
