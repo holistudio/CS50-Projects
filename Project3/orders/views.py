@@ -22,6 +22,9 @@ def get_current_shopping_cart(request):
 			return new_cart;
 		else:
 			return cart_query.get();
+	else:
+		print('User is not logged in.')
+
 
 # Create your views here.
 
@@ -153,9 +156,7 @@ def login_view(request):
 		user = authenticate(request, username=username, password=password)
 		if user is not None:
 			login(request, user)
-			#create a unique shopping cart model instance
-			cart = ShoppingCart(user = user);
-			cart.save();
+			get_current_shopping_cart(request);
 			return HttpResponseRedirect(reverse("orders:index"))
 		else:
 			return render(request, "orders/login.html", {"message": "Invalid username or password"})
