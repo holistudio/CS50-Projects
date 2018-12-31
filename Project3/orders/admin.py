@@ -25,14 +25,14 @@ class PizzaMenuItemAdmin(admin.ModelAdmin):
 	fields = ['item_type','item_name', 'pizza_type','size', 'topping_sel', 'price']
 
 
-class OrderItemAdmin(admin.ModelAdmin):
-	list_display = ('id', 'menu_item', 'add_ons', 'final_price', 'shopping_cart');
-	fields = ['menu_item', 'add_ons', 'final_price', 'shopping_cart']
+class OrderItemInline(admin.StackedInline):
+	model = OrderItem
 
 class ShoppingCartAdmin(admin.ModelAdmin):
 	list_display = ('user','total_cost', 'order_status');
 	fields = ['user','total_cost', 'order_status'];
 	#display all order items
+	inlines = [OrderItemInline]
 
 admin.site.register(MenuItem, GenMenuItemAdmin)
 admin.site.register(PizzaMenuItem, PizzaMenuItemAdmin)
@@ -41,5 +41,4 @@ admin.site.register(PastaMenuItem, SimpleMenuItemAdmin)
 admin.site.register(SaladMenuItem, SimpleMenuItemAdmin)
 admin.site.register(PlatterMenuItem, SizeMenuItemAdmin)
 admin.site.register(ToppingMenuItem, ToppingMenuItemAdmin)
-admin.site.register(OrderItem, OrderItemAdmin)
 admin.site.register(ShoppingCart, ShoppingCartAdmin)
