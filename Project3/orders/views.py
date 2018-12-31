@@ -129,6 +129,12 @@ def shopping_cart(request):
 	template = loader.get_template('orders/cart.html')
 	return HttpResponse(template.render(context, request));
 
+def confirm_order(request):
+	shopping_cart= ShoppingCart.objects.get(user = request.user);
+	shopping_cart.order_status='1';
+	shopping_cart.save();
+	return HttpResponseRedirect(reverse("orders:index"));
+
 def login_view(request):
 	if request.method == 'GET':
 		return render(request, "orders/login.html")
