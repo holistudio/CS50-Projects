@@ -126,18 +126,14 @@ class PlatterMenuItem(MenuItem):
 #Shopping Cart (one shopping cart to many order items)
 class ShoppingCart (models.Model):
 	#user
-	user = models.OneToOneField(
-		User,
-		on_delete=models.CASCADE,
-		primary_key=True,
-	);
+	user = models.ForeignKey(User, on_delete=models.CASCADE);
 
 	#compute the total cart price
 	total_cost = models.DecimalField(max_digits=5, default = Decimal('0.00'),decimal_places=2,validators=[MinValueValidator(Decimal('0.00'))]);
 
 	ORDER_STATUS_POSS = (
 		('0', "In Process"),
-		('1',"Order Confirmed"),
+		('1', "Order Confirmed"),
 	);
 
 	order_status = models.CharField(max_length=1, choices = ORDER_STATUS_POSS, default = '0', verbose_name="Order Status");
