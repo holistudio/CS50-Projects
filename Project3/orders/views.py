@@ -11,6 +11,17 @@ from django.forms.models import model_to_dict
 from .models import MenuItem, PizzaMenuItem, SubMenuItem, PastaMenuItem, SaladMenuItem, PlatterMenuItem, ToppingMenuItem, ShoppingCart, OrderItem
 
 from decimal import *
+
+def get_current_shopping_cart(request):
+	if request.user.is_authenticated:
+		cart_query = ShoppingCart.objects.filter(user = request.user, order_status='0');
+		if len(cart_query)==0:
+			new_cart = ShoppingCart(user=request.user);
+			new_cart.save();
+			return new_cart;
+		else:
+			return cart_query.get();
+
 # Create your views here.
 
 def index(request):
@@ -101,26 +112,18 @@ def add_item_to_cart(request):
 		final_price = request.POST['price'];
 
 		#create an order item model instance
-		if request.user.is_authenticated:
 
-			cart_query = ShoppingCart.objects.filter(user = request.user);
-
-			if len(cart_query)>0:
-				cart=cart_query[0];
-			else:
-				new_cart = ShoppingCart(user=request.user);
-				new_cart.save();
-				cart = new_cart;
-			o = OrderItem(menu_item=menu_item, final_price = final_price, add_ons = add_ons, shopping_cart = cart);
-			o.save();
-			cart.total_cost = cart.total_cost + Decimal(final_price);
-			cart.save();
+		cart = get_current_shopping_cart(request);
+		o = OrderItem(menu_item=menu_item, final_price = final_price, add_ons = add_ons, shopping_cart = cart);
+		o.save();
+		cart.total_cost = cart.total_cost + Decimal(final_price);
+		cart.save();
 		#if there isn't a shopping cart, create an instance
 
 	return HttpResponseRedirect(reverse("orders:index"))
 
 def shopping_cart(request):
-	shopping_cart= ShoppingCart.objects.get(user = request.user);
+	shopping_cart= get_current_shopping_cart(request);
 	shopping_cart_items = OrderItem.objects.filter(shopping_cart=shopping_cart);
 	context = {
 		'shopping_cart': shopping_cart,
