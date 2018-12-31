@@ -37,15 +37,15 @@ class MenuItem(models.Model):
 	price = models.DecimalField(max_digits=5, decimal_places=2,validators=[MinValueValidator(Decimal('0.00'))])
 	def __str__(self):
 		try:
-			return str(f"{self.item_type} - {self.item_name} - {self.pizzamenuitem.size} - {self.pizzamenuitem.topping_sel}");
+			return str(f"{self.get_item_type_display()} - {self.item_name} - {self.pizzamenuitem.size} - {self.pizzamenuitem.topping_sel}");
 		except PizzaMenuItem.DoesNotExist:
 			try:
-				return str(f"{self.item_type} - {self.item_name} - {self.submenuitem.size}");
+				return str(f"{self.get_item_type_display()} - {self.item_name} - {self.submenuitem.size}");
 			except SubMenuItem.DoesNotExist:
 				try:
-					return str(f"{self.item_type} - {self.item_name} - {self.plattermenuitem.size}");
+					return str(f"{self.get_item_type_display()} - {self.item_name} - {self.plattermenuitem.size}");
 				except:
-					return str(f"{self.item_type} - {self.item_name}");
+					return str(f"{self.get_item_type_display()} - {self.item_name}");
 
 	class Meta:
 			verbose_name = "Menu Item"
@@ -131,13 +131,22 @@ class ShoppingCart (models.Model):
 		on_delete=models.CASCADE,
 		primary_key=True,
 	);
+
 	#compute the total cart price
 	total_cost = models.DecimalField(max_digits=5, default = Decimal('0.00'),decimal_places=2,validators=[MinValueValidator(Decimal('0.00'))]);
+
+	ORDER_STATUS_POSS = (
+		('0', "In Process"),
+		('1',"Order Confirmed"),
+	);
+
+	order_status = models.CharField(max_length=1, choices = ORDER_STATUS_POSS, default = '0', verbose_name="Order Status");
+
 	class Meta:
 		verbose_name = "Shopping Cart"
 
 	def __str__(self):
-		return str(f"{self.user.username} - {self.total_cost}");
+		return str(f"{self.user.username}'s Shopping Cart");
 
 #OrderItem
 class OrderItem (models.Model):
