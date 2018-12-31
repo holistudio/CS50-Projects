@@ -130,9 +130,10 @@ def shopping_cart(request):
 	return HttpResponse(template.render(context, request));
 
 def check_out(request):
-	shopping_cart= ShoppingCart.objects.get(user = request.user);
-	shopping_cart.order_status='1';
-	shopping_cart.save();
+	if request.method == 'POST':
+		shopping_cart= ShoppingCart.objects.get(user = request.user);
+		shopping_cart.order_status='1';
+		shopping_cart.save();
 	return HttpResponseRedirect(reverse("orders:index"));
 
 def login_view(request):
