@@ -169,9 +169,12 @@ def register_view(request):
 
 		# Get form information.
 		username = request.POST["username"]
-		email = request.POST["email"]
 		password = request.POST["password"]
 		confirm = request.POST["pw-conf"]
+
+		first_name = request.POST["first-name"]
+		last_name = request.POST["last-name"]
+		email = request.POST["email"]
 
 		#make sure password match
 		if password != confirm:
@@ -185,6 +188,9 @@ def register_view(request):
 			else:
 				return render(request, "orders/register.html", {"message": "Invalid inputs"})
 		else:
+			#set first and last name
+			user.first_name = first_name;
+			user.last_name = last_name;
 			#add username and password to database
 			user.save()
 			return HttpResponseRedirect(reverse("orders:index"))
