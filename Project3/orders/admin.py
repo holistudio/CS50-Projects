@@ -30,8 +30,8 @@ class OrderItemAdmin(admin.ModelAdmin):
 	fields = ['menu_item', 'add_ons', 'final_price', 'shopping_cart']
 
 class ShoppingCartAdmin(admin.ModelAdmin):
-	list_display = ('user','total_cost');
-	fields = ['user','total_cost'];
+	list_display = ('user','total_cost', 'order_status');
+	fields = ['user','total_cost', 'order_status'];
 	#display all order items
 
 admin.site.register(MenuItem, GenMenuItemAdmin)
