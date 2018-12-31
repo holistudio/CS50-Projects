@@ -2,6 +2,11 @@
 
 {% block body %}
 <div class="container col-10">
+	{% if message %}
+	    <div class="alert alert-danger" role="alert">
+	        {{ message }}
+	    </div>
+	{% endif %}
 <form action="{% url 'orders:check_out' %}" method="post">
 	{% csrf_token %}
 	<table width="100%">

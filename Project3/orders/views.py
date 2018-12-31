@@ -1,4 +1,5 @@
 from django.contrib.auth import authenticate, login, logout
+from django.contrib import messages
 from django.http import HttpResponse, HttpResponseRedirect, JsonResponse
 from django.shortcuts import render
 from django.urls import reverse
@@ -134,10 +135,14 @@ def shopping_cart(request):
 
 def check_out(request):
 	if request.method == 'POST':
-		shopping_cart= ShoppingCart.objects.get(user = request.user);
-		shopping_cart.order_status='1';
-		shopping_cart.save();
-	return HttpResponseRedirect(reverse("orders:index"));
+		shopping_cart= get_current_shopping_cart(request);
+		if shopping_cart.total_cost>Decimal(0):
+			shopping_cart.order_status='1';
+			shopping_cart.save();
+			messages.add_message(request, messages.SUCCESS, 'Your order is in the works!')
+			return HttpResponseRedirect(reverse("orders:index"));
+		else:
+			return render(request, "orders/cart.html", {"message": "Please add items before checking out"})
 
 def login_view(request):
 	if request.method == 'GET':
