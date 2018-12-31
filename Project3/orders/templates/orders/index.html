@@ -1,7 +1,15 @@
 {% extends "orders/base.html" %}
 
 {% block body %}
-
+{% if messages %}
+{% for message in messages %}
+	{% if message.level == DEFAULT_MESSAGE_LEVELS.SUCCESS %}
+	<div class="alert alert-success" role="alert">
+			{{ message }}
+	</div>
+	{% endif %}
+{% endfor %}
+{% endif %}
 <script type="text/javascript">
 
 </script>
