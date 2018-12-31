@@ -12,7 +12,9 @@ class SimpleMenuItemAdmin(admin.ModelAdmin):
 	fields = ['item_type','item_name', 'price']
 
 class ToppingMenuItemAdmin(admin.ModelAdmin):
+	list_display=['item_name']
 	fields = ['item_name']
+	ordering = ['id']
 
 class SizeMenuItemAdmin(admin.ModelAdmin):
 	#for items with size
@@ -30,6 +32,8 @@ class OrderItemInline(admin.StackedInline):
 
 class ShoppingCartAdmin(admin.ModelAdmin):
 	list_display = ('user','total_cost', 'order_status');
+	list_filter = ('order_status',);
+	ordering = ['-order_status']
 	fields = ['user','total_cost', 'order_status'];
 	#display all order items
 	inlines = [OrderItemInline]
