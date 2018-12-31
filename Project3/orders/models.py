@@ -133,11 +133,13 @@ class ShoppingCart (models.Model):
 
 	ORDER_STATUS_POSS = (
 		('0', "In Process"),
-		('1', "Order Confirmed"),
+		('1', "Checked Out"),
 	);
 
 	order_status = models.CharField(max_length=1, choices = ORDER_STATUS_POSS, default = '0', verbose_name="Order Status");
 
+	conf_num = models.IntegerField(blank=True, null=True, verbose_name="Order Confirmation #");
+	checkout_time = models.DateTimeField(blank=True, null=True, verbose_name="Time Checked Out");
 	class Meta:
 		verbose_name = "Shopping Cart"
 

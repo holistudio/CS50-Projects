@@ -31,10 +31,10 @@ class OrderItemInline(admin.StackedInline):
 	model = OrderItem
 
 class ShoppingCartAdmin(admin.ModelAdmin):
-	list_display = ('user','total_cost', 'order_status');
+	list_display = ('user','total_cost', 'order_status','checkout_time','conf_num');
 	list_filter = ('order_status',);
-	ordering = ['-order_status']
-	fields = ['user','total_cost', 'order_status'];
+	ordering = ['-order_status','checkout_time']
+	fields = ['user','total_cost', 'order_status','checkout_time','conf_num'];
 	#display all order items
 	inlines = [OrderItemInline]
 

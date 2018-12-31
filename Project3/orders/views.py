@@ -8,10 +8,11 @@ from django.db import IntegrityError
 from django.template import loader
 from django.core import serializers
 from django.forms.models import model_to_dict
-
+from django.utils.timezone import now, localtime
 from .models import MenuItem, PizzaMenuItem, SubMenuItem, PastaMenuItem, SaladMenuItem, PlatterMenuItem, ToppingMenuItem, ShoppingCart, OrderItem
 
 from decimal import *
+import math, random
 
 def get_current_shopping_cart(request):
 	if request.user.is_authenticated:
@@ -141,8 +142,11 @@ def check_out(request):
 		shopping_cart= get_current_shopping_cart(request);
 		if shopping_cart.total_cost>Decimal(0):
 			shopping_cart.order_status='1';
+			shopping_cart.checkout_time = localtime(now());
+			conf_num = math.floor(random.random()*1000000);
+			shopping_cart.conf_num = conf_num;
 			shopping_cart.save();
-			messages.add_message(request, messages.SUCCESS, 'Your order is in the works!')
+			messages.add_message(request, messages.SUCCESS, str(f"Your order is in the works! Order Confirmation #: {conf_num}"))
 			return HttpResponseRedirect(reverse("orders:index"));
 		else:
 			return render(request, "orders/cart.html", {"message": "Please add items before checking out"})
