@@ -1,32 +1,35 @@
 {% extends "orders/base.html" %}
 
 {% block body %}
-    <div class="container col-4">
-    <h2>User Registration</h2>
+<div class="container col-4">
+  <h4>User Registration</h4>
+<br>
+  {% if message %}
+  <div class="alert alert-danger" role="alert">
+    {{ message }}
+  </div>
+  {% endif %}
+  <form action="{% url 'orders:register' %}" method="post" autocomplete="off">
+    {% csrf_token %}
 
-    {% if message %}
-	    <div class="alert alert-danger" role="alert">
-	        {{ message }}
-	    </div>
-	{% endif %}
-    <form action="{% url 'orders:register' %}" method="post" autocomplete="off">
-        {% csrf_token %}
-    	<div class="form-group">
-            <input  class="form-control" name="email" placeholder="Email">
-        </div>
-        <div class="form-group">
-            <input class="form-control" name="username" placeholder="Username">
-        </div>
-        <div class="form-group">
-            <input type="password" class="form-control" name="password" placeholder="Password">
-        </div>
-        <div class="form-group">
-            <input type="password" class="form-control" name="pw-conf" placeholder="Confirm Password">
-        </div>
-        <div class="form-group">
-            <input class="btn btn-primary" type="submit" value="Register">
-        </div>
-
-    </form>
+    <div class="form-group">
+      <h5>Login Information</h5>
+        <input class="form-control" id="username" name="username" placeholder="Username">
+        <input type="password" class="form-control" name="password" placeholder="Password">
+        <input type="password" class="form-control" name="pw-conf" placeholder="Confirm Password">
     </div>
+
+    <div class="form-group">
+      <h5>Personal Information</h5>
+      <input  class="form-control" name="first-name" placeholder="First name">
+      <input  class="form-control" name="last-name" placeholder="Last name">
+      <input  class="form-control" name="email" placeholder="Email">
+    </div>
+
+    <div class="form-group">
+      <input class="btn btn-primary" type="submit" value="Register">
+    </div>
+
+  </form>
+</div>
 {% endblock %}
