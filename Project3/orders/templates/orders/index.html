@@ -10,7 +10,7 @@
 <div class="modal" id="OrderItemModal">
 	<div class="modal-content">
     <span class="close">&times;</span>
-		<form id="item-order-form" action="{% url 'orders:add_item_to_cart' %}"method="post">
+		<form id="item-order-form" action="{% url 'orders:add_item_to_cart' %}" method="post">
 			{% csrf_token %}
 			<h3 id="menu-item-title"></h3>
 
