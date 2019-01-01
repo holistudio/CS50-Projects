@@ -1,48 +1,46 @@
 <!DOCTYPE html>
 <html>
-    <head>
-    	<title>PizzaHub</title>
-      <meta charset="utf-8"/>
-      {% load static %}
-      <link rel="shortcut icon" href="{% static 'orders/favicon.ico' %}">
-    	<link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.1.3/css/bootstrap.min.css" integrity="sha384-MCw98/SFnGE8fJT3GXwEOngsV7Zt27NXFoaoApmYm81iuXoPkFOJwJ8ERdknLPMO" crossorigin="anonymous">
-      <script src="https://cdn.jsdelivr.net/npm/js-cookie@2/src/js.cookie.min.js"></script>
-      <script type="text/javascript">
-        // csrftoken for AJAX requests using JS-Cookies
-        var csrftoken = Cookies.get('csrftoken');
-      </script>
+  <head>
+    <title>PizzaHub</title>
+    <meta charset="utf-8"/>
+    {% load static %}
+    <link rel="shortcut icon" href="{% static 'orders/favicon.ico' %}">
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.1.3/css/bootstrap.min.css" integrity="sha384-MCw98/SFnGE8fJT3GXwEOngsV7Zt27NXFoaoApmYm81iuXoPkFOJwJ8ERdknLPMO" crossorigin="anonymous">
+    <script src="https://cdn.jsdelivr.net/npm/js-cookie@2/src/js.cookie.min.js"></script>
+    <script type="text/javascript">
+      // csrftoken for AJAX requests using JS-Cookies
+      var csrftoken = Cookies.get('csrftoken');
+    </script>
 
-    </head>
-    <body>
-    	<div class="container">
-            <a id="title" href="{% url 'orders:index' %}"><h1>PizzaHub</h1></a>
-            <nav class="navbar navbar-expand-lg navbar-light bg-light mb-5 justify-content-between">
-                   <ul class="navbar-nav ">
-                      {% if user.is_authenticated %}
-                      <li class="navbar-text">
-                          {{ user.username }} |
-                      </li>
-                      <li class="nav-item">
-                          <a href="{% url 'orders:logout' %}" class="nav-link">Log Out</a>
-                      </li>
-                      {% else %}
-
-                      <li class="nav-item">
-                          <a class="nav-link" href="{% url 'orders:login' %}">Log In</a>
-                      </li>
-                     	<li class="nav-item">
-                          <a href="{% url 'orders:register' %}" class="nav-link">Register</a>
-                      </li>
-                      {% endif %}
-
-                    </ul>
-                    <div class="nav-item">
-                      <a href="{% url 'orders:shopping_cart' %}" class="nav-link">Shopping Cart <span id="num-cart-items">{% if shopping_cart %}{% if shopping_cart_items|length > 0 %}({{shopping_cart_items|length}}){% endif %}{% endif %}</span></a>
-                    </div>
-            </nav>
-            {% block body %}
-        	{% endblock %}
+  </head>
+  <body>
+    <div class="container">
+      <a id="title" href="{% url 'orders:index' %}"><h1>PizzaHub</h1></a>
+      <nav class="navbar navbar-expand-lg navbar-light bg-light mb-5 justify-content-between">
+        <ul class="navbar-nav ">
+          {% if user.is_authenticated %}
+          <li class="navbar-text">
+            {{ user.username }} |
+          </li>
+          <li class="nav-item">
+            <a href="{% url 'orders:logout' %}" class="nav-link">Log Out</a>
+          </li>
+          {% else %}
+          <li class="nav-item">
+            <a class="nav-link" href="{% url 'orders:login' %}">Log In</a>
+          </li>
+          <li class="nav-item">
+            <a href="{% url 'orders:register' %}" class="nav-link">Register</a>
+          </li>
+          {% endif %}
+        </ul>
+        <div class="nav-item">
+          <a href="{% url 'orders:shopping_cart' %}" class="nav-link">Shopping Cart <span id="num-cart-items">{% if shopping_cart %}{% if shopping_cart_items|length > 0 %}({{shopping_cart_items|length}}){% endif %}{% endif %}</span></a>
         </div>
+      </nav>
+      {% block body %}
+      {% endblock %}
+    </div>
 
-    </body>
+  </body>
 </html>
