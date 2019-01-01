@@ -29,13 +29,17 @@ class PizzaMenuItemAdmin(admin.ModelAdmin):
 
 class OrderItemInline(admin.StackedInline):
 	model = OrderItem
+	extra = 0;
+	fields = ['menu_item', 'add_ons','final_price_dollars',];
+	readonly_fields = ['final_price_dollars',];
 
 class ShoppingCartAdmin(admin.ModelAdmin):
 	list_display = ('user','total_cost', 'order_status','checkout_time','conf_num');
 	list_filter = ('order_status',);
 	ordering = ['-order_status','checkout_time']
-	fields = ['user','total_cost', 'order_status','checkout_time','conf_num'];
-	#display all order items
+	fields = ['user', 'order_status','checkout_time','conf_num','total_cost_dollars',];
+	readonly_fields = ['total_cost_dollars',];
+	#display all order item
 	inlines = [OrderItemInline]
 
 admin.site.register(MenuItem, GenMenuItemAdmin)
