@@ -10,9 +10,10 @@ from django.core import serializers
 from django.forms.models import model_to_dict
 from django.utils.timezone import now, localtime
 from .models import MenuItem, PizzaMenuItem, SubMenuItem, PastaMenuItem, SaladMenuItem, PlatterMenuItem, ToppingMenuItem, ShoppingCart, OrderItem
+from django.core.mail import send_mail
 
 from decimal import *
-import math, random
+import math, random, os
 
 def get_current_shopping_cart(request):
 	if request.user.is_authenticated:
@@ -146,6 +147,13 @@ def check_out(request):
 			conf_num = math.floor(random.random()*1000000);
 			shopping_cart.conf_num = conf_num;
 			shopping_cart.save();
+			send_mail(
+			    'Your order for PizzaHub is in the works!',
+			    str(f"Your order is in the works! Order Confirmation #: {conf_num}"),
+			    os.getenv("SERVER_NO_REPLY_EMAIL"),
+			    [shopping_cart.user.email],
+			    fail_silently=False,
+			);
 			messages.add_message(request, messages.SUCCESS, str(f"Your order is in the works! Order Confirmation #: {conf_num}"))
 			return HttpResponseRedirect(reverse("orders:index"));
 		else:

@@ -101,6 +101,23 @@ AUTH_PASSWORD_VALIDATORS = [
 ]
 
 
+ADMINS = (
+    ('Dan Lu', os.getenv("SERVER_NO_REPLY_EMAIL")),
+)
+
+MANAGERS = ADMINS
+MAILER_EMAIL_BACKEND = 'django_libs.test_email_backend.EmailBackend'
+TEST_EMAIL_BACKEND_RECIPIENTS = ADMINS
+
+FROM_EMAIL = ADMINS[0][1]
+
+EMAIL_HOST = 'smtp.gmail.com'
+EMAIL_HOST_USER = FROM_EMAIL
+EMAIL_HOST_PASSWORD = os.getenv("SERVER_NO_REPLY_EMAILPW")
+EMAIL_PORT = 587
+EMAIL_USE_TLS = True
+
+
 # Internationalization
 # https://docs.djangoproject.com/en/2.0/topics/i18n/
 
