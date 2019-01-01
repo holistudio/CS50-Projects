@@ -26,7 +26,6 @@ class PizzaMenuItemAdmin(admin.ModelAdmin):
 	list_display = ('item_type','item_name', 'pizza_type','size', 'topping_sel', 'price')
 	fields = ['item_type','item_name', 'pizza_type','size', 'topping_sel', 'price']
 
-
 class OrderItemInline(admin.StackedInline):
 	model = OrderItem
 	extra = 0;
@@ -39,7 +38,7 @@ class ShoppingCartAdmin(admin.ModelAdmin):
 	ordering = ['-order_status','checkout_time']
 	fields = ['user', 'order_status','checkout_time','conf_num','total_cost_dollars',];
 	readonly_fields = ['total_cost_dollars',];
-	#display all order item
+	#display all order items
 	inlines = [OrderItemInline]
 
 admin.site.register(MenuItem, GenMenuItemAdmin)
