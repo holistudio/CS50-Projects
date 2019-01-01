@@ -25,7 +25,7 @@ def get_current_shopping_cart(request):
 		else:
 			return cart_query.get();
 	else:
-		print('User is not logged in.')
+		return 'NO_USER_LOGGED_IN'
 
 
 # Create your views here.
@@ -41,6 +41,7 @@ def index(request):
 	topping_list = [];
 	for item in topping_queryDict:
 		topping_list.append(item['item_name']);
+
 	template = loader.get_template('orders/index.html')
 	context = {
 		'pizza_list': pizza_list,
@@ -51,6 +52,12 @@ def index(request):
 		'platter_list': platter_list,
 		'topping_list':topping_list,
 	}
+
+	shopping_cart = get_current_shopping_cart(request);
+	if shopping_cart != 'NO_USER_LOGGED_IN':
+		context['shopping_cart'] = shopping_cart;
+		shopping_cart_items = OrderItem.objects.filter(shopping_cart=shopping_cart);
+		context['shopping_cart_items'] = shopping_cart_items;
 	return HttpResponse(template.render(context, request))
 
 def item_display(request):
