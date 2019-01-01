@@ -52,6 +52,8 @@ MIDDLEWARE = [
 
 ROOT_URLCONF = 'pizza.urls'
 
+STATIC_URL = '/static/'
+
 TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
@@ -116,6 +118,7 @@ EMAIL_HOST_USER = FROM_EMAIL
 EMAIL_HOST_PASSWORD = os.getenv("SERVER_NO_REPLY_EMAILPW")
 EMAIL_PORT = 587
 EMAIL_USE_TLS = True
+
 
 
 # Internationalization
