@@ -122,7 +122,6 @@ def add_item_to_cart(request):
 		cart = get_current_shopping_cart(request);
 		o = OrderItem(menu_item=menu_item, final_price = final_price, add_ons = add_ons, shopping_cart = cart);
 		o.save();
-		cart.total_cost = cart.total_cost + Decimal(final_price);
 		cart.save();
 		#if there isn't a shopping cart, create an instance
 
@@ -146,6 +145,7 @@ def remove_cart_item(request):
 		o = OrderItem.objects.get(id = item_id);
 		#delete item
 		o.delete();
+		o.shopping_cart.save();
 		#return to shopping cart page
 		return HttpResponseRedirect(reverse("orders:shopping_cart"))
 

@@ -140,11 +140,20 @@ class ShoppingCart (models.Model):
 
 	conf_num = models.IntegerField(blank=True, null=True, verbose_name="Order Confirmation #");
 	checkout_time = models.DateTimeField(blank=True, null=True, verbose_name="Time Checked Out");
+
 	class Meta:
 		verbose_name = "Shopping Cart"
 
 	def __str__(self):
 		return str(f"{self.user.username}'s Shopping Cart");
+	def save(self):
+		total = Decimal(0);
+		shopping_cart_items = OrderItem.objects.filter(shopping_cart=self);
+		print(shopping_cart_items);
+		for item in shopping_cart_items:
+			total = total + item.final_price;
+		self.total_cost = Decimal(total);
+		super(ShoppingCart, self).save()
 
 #OrderItem
 class OrderItem (models.Model):
@@ -161,6 +170,11 @@ class OrderItem (models.Model):
 		return self.add_ons.split(',')[0:len(self.add_ons.split(','))-1];
 
 	shopping_cart = models.ForeignKey(ShoppingCart, on_delete=models.CASCADE);
-
+	def delete(self):
+		super(OrderItem, self).delete()
+		self.shopping_cart.save();
+	def save(self):
+		super(OrderItem, self).save()
+		self.shopping_cart.save();
 	def __str__(self):
 		return str(f"{self.menu_item.item_type} - {self.menu_item.item_name} - {self.final_price}");
