@@ -138,6 +138,17 @@ def shopping_cart(request):
 	template = loader.get_template('orders/cart.html')
 	return HttpResponse(template.render(context, request));
 
+def remove_cart_item(request):
+
+	if request.method == 'POST':
+		#get order item id to be deleted
+		item_id = request.POST["item_id"];
+		o = OrderItem.objects.get(id = item_id);
+		#delete item
+		o.delete();
+		#return to shopping cart page
+		return HttpResponseRedirect(reverse("orders:shopping_cart"))
+
 def check_out(request):
 	if request.method == 'POST':
 		shopping_cart= get_current_shopping_cart(request);

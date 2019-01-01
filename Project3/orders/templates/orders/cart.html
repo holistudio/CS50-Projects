@@ -24,11 +24,11 @@
 					{% endfor %}
 					</ul>
 					</td>
-					<td>{{item.final_price}} <a class="remove">[-]</a></td>
+					<td><span class="order-item-price">{{item.final_price}}</span> <a href="" class="removeItem" id="{{item.id}}">[-]</a></td>
 				</tr>
 				{% endfor %}
 				<tr>
-					<td>Total: {{shopping_cart.total_cost}}</td>
+					<td>Total: </td><td id="total-cost">{{shopping_cart.total_cost}}</td>
 				</tr>
 		</tbody>
 	</table>
@@ -39,4 +39,42 @@
 
 
 </div>
+<script type="text/javascript">
+	document.addEventListener('DOMContentLoaded', () => {
+		let total_cost = parseFloat(document.querySelector('#total-cost').innerHTML);
+
+		document.querySelectorAll('.removeItem').forEach(remove => {
+				remove.onclick = () => {
+					const request = new XMLHttpRequest();
+
+					//Get the id of the order item clicked
+					const removeID = remove.id;
+
+
+					//create a request to server with menu item route
+					request.open('POST', '/removecartitem/');
+
+
+					const data = new FormData();
+					data.append('item_id', removeID);
+					// Send request to update shopping cart server side
+					request.setRequestHeader("X-CSRFToken", csrftoken);
+					request.send(data);
+
+
+					//update total cost on front end
+					order_item_price = parseFloat(remove.parentElement.firstElementChild.innerHTML);
+					total_cost = total_cost - order_item_price
+					document.querySelector('#total-cost').innerHTML=`${total_cost.toFixed(2)}`;
+
+					//remove table row
+					table_row = remove.parentElement.parentElement;
+					table = table_row.parentElement;
+					table.removeChild(table_row);
+					//stop page from reloading after request is sent
+					return false;
+				}
+			});
+	});
+</script>
 {% endblock %}
