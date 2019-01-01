@@ -107,12 +107,12 @@ def add_item_to_cart(request):
 		steak_sub_add_ons = ['extra_mushrooms','extra_green_peppers','extra_onions']
 		if menu_item.item_type=='SUB':
 			if 'extra_cheese' in request.POST.keys():
-				add_ons = str(f"{add_ons},Extra Cheese");
+				add_ons = str(f"{add_ons},Extra Cheese (+0.50)");
 
 			if menu_item.item_name == 'Steak + Cheese':
 				for i in range(0,len(steak_sub_add_ons)):
 					if steak_sub_add_ons[i] in request.POST.keys():
-						add_ons = str(f"{add_ons},{request.POST[steak_sub_add_ons[i]]}");
+						add_ons = str(f"{add_ons},{request.POST[steak_sub_add_ons[i]]} (+0.50)");
 		if len(add_ons)>0:
 			if add_ons[0]==',':
 				add_ons = add_ons[1:];

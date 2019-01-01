@@ -1,7 +1,12 @@
 {% extends "orders/base.html" %}
 
 {% block body %}
-<div class="container col-10">
+<style type="text/css">
+	td, th{
+		padding-bottom:1em;
+	}
+</style>
+<div class="container col-6">
 	{% if message %}
 	    <div class="alert alert-danger" role="alert">
 	        {{ message }}
@@ -12,28 +17,31 @@
 	<table width="100%">
 		<tbody>
 			<tr>
-				<td>Item</td>
-				<td>Price</td>
+				<th>Item</th>
+				<th style="text-align:right">Price</th>
+				<th></th>
 			</tr>
 				{% for item in shopping_cart_items %}
 				<tr>
 					<td name = "item">{{item.menu_item}}
-					<ul>
-					{% for add_on in item.get_add_ons_list %}
-						<li>{{ add_on }}</li>
-					{% endfor %}
-					</ul>
+						{% if item.get_add_ons_list|length > 0 %}
+						<p class="text-secondary" style="margin-bottom:0;text-indent:1em">Add Ons:</p>
+							<ul class="text-secondary" style="margin-bottom:0;list-style: none">
+								{% for add_on in item.get_add_ons_list %}
+									<li>{{ add_on }}</li>
+								{% endfor %}</ul>
+						{% endif %}
 					</td>
-					<td><span class="order-item-price">{{item.final_price}}</span> <a href="" class="removeItem" id="{{item.id}}">[-]</a></td>
+					<td style="text-align:right">{{item.final_price}}</td><td style="text-align:center"> <a href="" class="removeItem" id="{{item.id}}">[-]</a></td>
 				</tr>
 				{% endfor %}
 				<tr>
-					<td>Total: </td><td id="total-cost">{{shopping_cart.total_cost}}</td>
+					<td>Total: </td><td id="total-cost" style="text-align:right">{{shopping_cart.total_cost}}</td><td></td>
 				</tr>
 		</tbody>
 	</table>
 
-
+	<br>
 	<button class="btn btn-primary" type="submit" name="submit">Checkout</button>
 </form>
 
@@ -63,7 +71,7 @@
 
 
 					//update total cost on front end
-					order_item_price = parseFloat(remove.parentElement.firstElementChild.innerHTML);
+					order_item_price = parseFloat(remove.parentElement.previousElementSibling.innerHTML);
 					total_cost = total_cost - order_item_price
 					document.querySelector('#total-cost').innerHTML=`${total_cost.toFixed(2)}`;
 

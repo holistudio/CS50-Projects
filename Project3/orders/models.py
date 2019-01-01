@@ -163,7 +163,6 @@ class ShoppingCart (models.Model):
 	def save(self):
 		total = Decimal(0);
 		shopping_cart_items = OrderItem.objects.filter(shopping_cart=self);
-		print(shopping_cart_items);
 		for item in shopping_cart_items:
 			total = total + item.final_price;
 		self.total_cost = Decimal(total);
