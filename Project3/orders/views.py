@@ -113,8 +113,9 @@ def add_item_to_cart(request):
 				for i in range(0,len(steak_sub_add_ons)):
 					if steak_sub_add_ons[i] in request.POST.keys():
 						add_ons = str(f"{add_ons},{request.POST[steak_sub_add_ons[i]]}");
-		if add_ons[0]==',':
-			add_ons = add_ons[1:];
+		if len(add_ons)>0:
+			if add_ons[0]==',':
+				add_ons = add_ons[1:];
 		#final price from form
 		final_price = request.POST['price'];
 

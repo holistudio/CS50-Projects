@@ -184,7 +184,8 @@ class OrderItem (models.Model):
 
 	#returns the add ons as an array
 	def get_add_ons_list(self):
-		print(self.add_ons.split(','));
+		if(self.add_ons.split(',')==['']):
+			return [];
 		return self.add_ons.split(',');
 
 	shopping_cart = models.ForeignKey(ShoppingCart, on_delete=models.CASCADE);
@@ -194,7 +195,6 @@ class OrderItem (models.Model):
 	def save(self):
 		self.final_price = self.menu_item.price;
 		if self.menu_item.item_type=='SUB':
-			print(self.get_add_ons_list)
 			self.final_price = self.final_price + Decimal((len(self.add_ons.split(',')))*0.5);
 		super(OrderItem, self).save()
 		self.shopping_cart.save();
