@@ -170,7 +170,8 @@ def check_out(request):
 			messages.add_message(request, messages.SUCCESS, str(f"Your order is in the works! Order Confirmation #: {conf_num}"))
 			return HttpResponseRedirect(reverse("orders:index"));
 		else:
-			return render(request, "orders/cart.html", {"message": "Please add items before checking out"})
+			messages.add_message(request, messages.ERROR, str(f"Please add items before checking out"))
+			return HttpResponseRedirect(reverse("orders:shopping_cart"))
 
 def login_view(request):
 	if request.method == 'GET':
@@ -184,7 +185,8 @@ def login_view(request):
 			get_current_shopping_cart(request);
 			return HttpResponseRedirect(reverse("orders:index"))
 		else:
-			return render(request, "orders/login.html", {"message": "Invalid username or password"})
+			messages.add_message(request, messages.ERROR, str(f"Invalid username or password"))
+			return HttpResponseRedirect(reverse("orders:login"))
 
 def logout_view(request):
 	logout(request)
@@ -204,21 +206,25 @@ def register_view(request):
 
 		#make sure password match
 		if password != confirm:
-			return render(request, "orders/register.html", {"message": "Passwords do not match"})
+			messages.add_message(request, messages.ERROR, str(f"Passwords do not match"))
+			return HttpResponseRedirect(reverse("orders:register"))
 		#make sure username does not already exist
 		try:
 			user = User.objects.create_user(username, email, password)
 		except IntegrityError as e:
 			if(str(e.__cause__)=='UNIQUE constraint failed: auth_user.username'):
-				return render(request, "orders/register.html", {"message": "Username already exists"})
+				messages.add_message(request, messages.ERROR, str(f"Username already exists"))
+				return HttpResponseRedirect(reverse("orders:register"))
 			else:
-				return render(request, "orders/register.html", {"message": "Invalid inputs"})
+				messages.add_message(request, messages.ERROR, str(f"Invalid inputs"))
+				return HttpResponseRedirect(reverse("orders:register"))
 		else:
 			#set first and last name
 			user.first_name = first_name;
 			user.last_name = last_name;
 			#add username and password to database
 			user.save()
+			messages.add_message(request, messages.SUCCESS, str(f"You're registered!"))
 			return HttpResponseRedirect(reverse("orders:index"))
 	else:
-		return render(request, "orders/register.html")
+		return HttpResponseRedirect(reverse("orders:register"))

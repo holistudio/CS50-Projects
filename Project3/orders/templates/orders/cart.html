@@ -7,10 +7,14 @@
 	}
 </style>
 <div class="container col-6">
-	{% if message %}
-	    <div class="alert alert-danger" role="alert">
-	        {{ message }}
-	    </div>
+	{% if messages %}
+	{% for message in messages %}
+		{% if message.level == DEFAULT_MESSAGE_LEVELS.ERROR %}
+		<div class="alert alert-danger" role="alert">
+				{{ message }}
+		</div>
+		{% endif %}
+	{% endfor %}
 	{% endif %}
 <form action="{% url 'orders:check_out' %}" method="post">
 	{% csrf_token %}

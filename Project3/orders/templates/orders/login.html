@@ -3,10 +3,14 @@
 {% block body %}
 <div class="container col-4">
 	<h2>Log In</h2>
-	{% if message %}
-	    <div class="alert alert-danger" role="alert">
-	        {{ message }}
-	    </div>
+	{% if messages %}
+	{% for message in messages %}
+	  {% if message.level == DEFAULT_MESSAGE_LEVELS.ERROR %}
+	  <div class="alert alert-danger" role="alert">
+	      {{ message }}
+	  </div>
+	  {% endif %}
+	{% endfor %}
 	{% endif %}
 	<form action="{% url 'orders:login' %}" method="post" autocomplete="off">
 	    {% csrf_token %}
