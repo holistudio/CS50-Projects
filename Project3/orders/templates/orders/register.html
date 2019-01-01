@@ -3,19 +3,18 @@
 {% block body %}
 <div class="container col-4">
   <h4>User Registration</h4>
-<br>
-{% if messages %}
-{% for message in messages %}
-  {% if message.level == DEFAULT_MESSAGE_LEVELS.ERROR %}
-  <div class="alert alert-danger" role="alert">
-      {{ message }}
-  </div>
+  <br>
+  {% if messages %}
+  {% for message in messages %}
+    {% if message.level == DEFAULT_MESSAGE_LEVELS.ERROR %}
+    <div class="alert alert-danger" role="alert">
+        {{ message }}
+    </div>
+    {% endif %}
+  {% endfor %}
   {% endif %}
-{% endfor %}
-{% endif %}
   <form action="{% url 'orders:register' %}" method="post" autocomplete="off">
     {% csrf_token %}
-
     <div class="form-group">
       <h5>Login Information</h5>
         <input class="form-control" id="username" name="username" placeholder="Username">
