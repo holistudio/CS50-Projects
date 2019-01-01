@@ -5,270 +5,249 @@
 {% for message in messages %}
 	{% if message.level == DEFAULT_MESSAGE_LEVELS.SUCCESS %}
 	<div class="alert alert-success" role="alert">
-			{{ message }}
+		{{ message }}
 	</div>
 	{% endif %}
 {% endfor %}
 {% endif %}
 {% if user.is_authenticated %}
 <style type="text/css">
+	/* as demonstrated by https://www.w3schools.com/howto/howto_css_modals.asp */
+	/* The Modal (background) */
+	.modal {
+			display: none; /* Hidden by default */
+			position: fixed; /* Stay in place */
+			z-index: 1; /* Sit on top */
+			padding-top: 100px; /* Location of the box */
+			left: 0;
+			top: 0;
+			width: 100%; /* Full width */
+			height: 100%; /* Full height */
+			overflow: auto; /* Enable scroll if needed */
+			background-color: rgb(0,0,0); /* Fallback color */
+			background-color: rgba(0,0,0,0.4); /* Black w/ opacity */
+	}
 
-/* The Modal (background) */
-.modal {
-		display: none; /* Hidden by default */
-		position: fixed; /* Stay in place */
-		z-index: 1; /* Sit on top */
-		padding-top: 100px; /* Location of the box */
-		left: 0;
-		top: 0;
-		width: 100%; /* Full width */
-		height: 100%; /* Full height */
-		overflow: auto; /* Enable scroll if needed */
-		background-color: rgb(0,0,0); /* Fallback color */
-		background-color: rgba(0,0,0,0.4); /* Black w/ opacity */
-}
+	/* Modal Content */
+	.modal-content {
+			margin: auto;
+			padding: 20px;
+			width: 25%;
+	}
 
-/* Modal Content */
-.modal-content {
-		margin: auto;
-		padding: 20px;
-		width: 25%;
-}
+	#final-price{
+		outline: none;
+	}
 
-#final-price{
-	outline: none;
-}
+	.topping-selection-dropdown{
+		width: 30%;
+	}
+	/* The Close Button */
+	.close {
+			color: #aaaaaa;
+			text-align: right;
+			font-size: 28px;
+			font-weight: bold;
+	}
 
-.topping-selection-dropdown{
-	width: 30%;
-}
-/* The Close Button */
-.close {
-		color: #aaaaaa;
-		text-align: right;
-		font-size: 28px;
-		font-weight: bold;
-}
-
-.close:hover,
-.close:focus {
-		color: #000;
-		text-decoration: none;
-		cursor: pointer;
-}
+	.close:hover,
+	.close:focus {
+			color: #000;
+			text-decoration: none;
+			cursor: pointer;
+	}
 </style>
 
-
-<script type="text/javascript">
-
-</script>
 <div class="container col-10">
-<h2>Menu</h2>
-<div class="modal" id="OrderItemModal">
-	<div class="modal-content">
-    <span class="close">&times;</span>
-		<form id="item-order-form" action="{% url 'orders:add_item_to_cart' %}" method="post">
-			{% csrf_token %}
-			<h4 id="menu-item-title"></h4>
-			<p></p>
-			<p id="item-size-section">Size: <span id="item-size-display"></span></p>
+	<h2>Menu</h2>
+	<div class="modal" id="OrderItemModal">
+		<div class="modal-content">
+	    <span class="close">&times;</span>
+			<form id="item-order-form" action="{% url 'orders:add_item_to_cart' %}" method="post">
+				{% csrf_token %}
+				<h4 id="menu-item-title"></h4>
+				<p></p>
+				<p id="item-size-section">Size: <span id="item-size-display"></span></p>
 
-			<p id="topping-sel-section">Topping Choice: <span id="topping-sel-display"></span></p>
+				<p id="topping-sel-section">Topping Choice: <span id="topping-sel-display"></span></p>
 
-			<input id="menu-item-id" name="menu_item_id" value="0" hidden readonly>
+				<input id="menu-item-id" name="menu_item_id" value="0" hidden readonly>
 
-			<div id="topping-dropdown-section">
-				<p>Toppings: </p>
-				<div id="topping-dropdowns">
-
+				<div id="topping-dropdown-section">
+					<p>Toppings: </p>
+					<div id="topping-dropdowns">
+					</div>
 				</div>
-			</div>
 
-			<div id="sub-add-ons-section">
-				<p>Add Ons:</p>
-				<ul id="sub-add-ons" style="list-style: none">
-						<li><input class="sub-extra" type="checkbox" name="extra_cheese" value="Extra Cheese">  Extra Cheese (+0.50)</li>
-						<li class="steak-cheese-extra"><input class="sub-extra" type="checkbox" name="extra_mushrooms" value="Extra Mushrooms">  Mushrooms (+0.50)</li>
-						<li class="steak-cheese-extra"><input class="sub-extra" type="checkbox" name="extra_green_peppers" value="Extra Green Peppers">  Green Peppers (+0.50)</li>
-						<li class="steak-cheese-extra"><input class="sub-extra" type="checkbox" name="extra_onions" value="Extra Onions">  Onions (+0.50)</li>
-				</ul>
-			</div>
+				<div id="sub-add-ons-section">
+					<p>Add Ons:</p>
+					<ul id="sub-add-ons" style="list-style: none">
+							<li><input class="sub-extra" type="checkbox" name="extra_cheese" value="Extra Cheese">  Extra Cheese (+0.50)</li>
+							<li class="steak-cheese-extra"><input class="sub-extra" type="checkbox" name="extra_mushrooms" value="Extra Mushrooms">  Mushrooms (+0.50)</li>
+							<li class="steak-cheese-extra"><input class="sub-extra" type="checkbox" name="extra_green_peppers" value="Extra Green Peppers">  Green Peppers (+0.50)</li>
+							<li class="steak-cheese-extra"><input class="sub-extra" type="checkbox" name="extra_onions" value="Extra Onions">  Onions (+0.50)</li>
+					</ul>
+				</div>
 
-			<strong><p id="price-section">Price:  <input id="final-price" type="text" name="price" value="0.00" readonly style="border:none"></p></strong>
+				<strong><p id="price-section">Price:  <input id="final-price" type="text" name="price" value="0.00" readonly style="border:none"></p></strong>
 
-
-			<button class="btn btn-primary" type="submit" name="submit" id="add-cart-button">Add to Cart</button>
-		</form>
-  </div>
-</div>
-
-
-<table class="foodmenu" width="100%">
-	<tbody>
-		{% if pizza_list %}
-			<tr>
-				<th colspan="3">Regular Pizza</th>
-			</tr>
-			<tr>
-				<td></td>
-				<td><i>Small</i></td>
-				<td><i>Large</i></td>
-			</tr>
-			<!-- for each item in pizza_list -->
-			{% for item in pizza_list %}
-				{% if item.size == "S" %}
-					<!-- if item size is small -->
-					<tr>
-					<td width="50%">{{item.get_topping_sel_display}}</td>
-					<td class="price" width="25%">{{item.price}} <a href="" class="addItem" id="{{item.get_item_type_display}}-{{item.id}}">+</a></td>
-				{% endif %}
-				{% if item.size == "L" %}
-					<!-- if item size is large -->
-					<td width="25%">{{item.price}} <a href="" class="addItem" id="{{item.get_item_type_display}}-{{item.id}}">+</a></td>
-					</tr>
-				{% endif %}
-				<!-- end if -->
-			{% endfor %}
-
-		{% else %}
-		<tr>No Pizzas!</tr>
-		{% endif %}
+				<button class="btn btn-primary" type="submit" name="submit" id="add-cart-button">Add to Cart</button>
+			</form>
+	  </div>
+	</div>
+	<table class="foodmenu" width="100%">
+		<tbody>
+			{% if pizza_list %}
+				<tr>
+					<th colspan="3">Regular Pizza</th>
+				</tr>
+				<tr>
+					<td></td>
+					<td><i>Small</i></td>
+					<td><i>Large</i></td>
+				</tr>
+				{% for item in pizza_list %}
+					{% if item.size == "S" %}
+						<tr>
+						<td width="50%">{{item.get_topping_sel_display}}</td>
+						<td class="price" width="25%">{{item.price}} <a href="" class="addItem" id="{{item.get_item_type_display}}-{{item.id}}">+</a></td>
+					{% endif %}
+					{% if item.size == "L" %}
+						<td width="25%">{{item.price}} <a href="" class="addItem" id="{{item.get_item_type_display}}-{{item.id}}">+</a></td>
+						</tr>
+					{% endif %}
+				{% endfor %}
+			{% else %}
+				<tr>No Pizzas!</tr>
+			{% endif %}
 		</tbody>
 	</table>
 	<table class="foodmenu" width="100%">
 		<tbody>
-		{% if sicilian_pizza_list %}
-			<br>
+			{% if sicilian_pizza_list %}
+				<br>
+				<tr>
+					<th colspan="3">Sicilian Pizza</th>
+				</tr>
+				<tr>
+					<td></td>
+					<td><i>Small</i></td>
+					<td><i>Large</i></td>
+				</tr>
+				{% for item in sicilian_pizza_list %}
+					{% if item.size == "S" %}
+						<tr>
+						<td width="50%">{{item.get_topping_sel_display}}</td>
+						<td width="25%">{{item.price}} <a href="" class="addItem" id="{{item.get_item_type_display}}-{{item.id}}">+</td>
+					{% endif %}
+					{% if item.size == "L" %}
+						<td width="25%">{{item.price}} <a href="" class="addItem" id="{{item.get_item_type_display}}-{{item.id}}">+</td>
+						</tr>
+					{% endif %}
+				{% endfor %}
+			{% else %}
+				<tr>No Pizzas!</tr>
+			{% endif %}
+		</tbody>
+	</table>
+	<br>
+	<table class="foodmenu" width="100%">
+		<tbody>
 			<tr>
-				<th colspan="3">Sicilian Pizza</th>
+				<th colspan="3">Subs</th>
 			</tr>
+			{% if subs_list %}
 			<tr>
 				<td></td>
 				<td><i>Small</i></td>
 				<td><i>Large</i></td>
 			</tr>
-			<!-- for each item in pizza_list -->
-			{% for item in sicilian_pizza_list %}
+			{% for item in subs_list %}
 				{% if item.size == "S" %}
-					<!-- if item size is small -->
-					<tr>
-					<td width="50%">{{item.get_topping_sel_display}}</td>
-					<td width="25%">{{item.price}} <a href="" class="addItem" id="{{item.get_item_type_display}}-{{item.id}}">+</td>
-				{% endif %}
-				{% if item.size == "L" %}
-					<!-- if item size is large -->
-					<td width="25%">{{item.price}} <a href="" class="addItem" id="{{item.get_item_type_display}}-{{item.id}}">+</td>
-					</tr>
-				{% endif %}
-				<!-- end if -->
-			{% endfor %}
-		{% else %}
-		<tr>No Pizzas!</tr>
-		{% endif %}
-	</tbody>
-</table>
-<br>
-<table class="foodmenu" width="100%">
-	<tbody>
-		<tr>
-			<th colspan="3">Subs</th>
-		</tr>
-
-		{% if subs_list %}
-		<tr>
-			<td></td>
-			<td><i>Small</i></td>
-			<td><i>Large</i></td>
-		</tr>
-		{% for item in subs_list %}
-			{% if item.size == "S" %}
-				<!-- if item size is small -->
-				<tr>
-				<td width="50%">{{item.item_name}}</td>
-				<td width="25%">{{item.price}} <a href="" class="addItem" id="{{item.get_item_type_display}}-{{item.id}}">+</a></td>
-			{% endif %}
-			{% if item.size == "L" %}
-				{% if item.item_name == "Sausage, Peppers & Onions" %}
 					<tr>
 					<td width="50%">{{item.item_name}}</td>
-					<td width="25%"> - </td>
+					<td width="25%">{{item.price}} <a href="" class="addItem" id="{{item.get_item_type_display}}-{{item.id}}">+</a></td>
 				{% endif %}
-				<!-- if item size is large -->
-				<td width="25%">{{item.price}} <a href="" class="addItem" id="{{item.get_item_type_display}}-{{item.id}}">+</a></td>
-				</tr>
+				{% if item.size == "L" %}
+					{# Sausage Pepper Onion Sub only available in large #}
+					{% if item.item_name == "Sausage, Peppers & Onions" %}
+						<tr>
+						<td width="50%">{{item.item_name}}</td>
+						<td width="25%"> - </td>
+					{% endif %}
+					<td width="25%">{{item.price}} <a href="" class="addItem" id="{{item.get_item_type_display}}-{{item.id}}">+</a></td>
+					</tr>
+				{% endif %}
+			{% endfor %}
+			{% else %}
+			<tr>No Subs!</tr>
 			{% endif %}
-		{% endfor %}
-		{% else %}
-		<tr>No Subs!</tr>
-		{% endif %}
-	</tbody>
-</table>
-<br>
-<table class="foodmenu" width="100%">
-	<tbody>
-	<tr>
-		<th colspan="3">Pasta</th>
-	</tr>
-	{% if pasta_list %}
-	{% for item in pasta_list %}
-		<tr>
-			<td style="text-align: left;" width="50%">{{item.item_name}}</td>
-			<td width="25%">{{item.price}} <a href="" class="addItem" id="{{item.get_item_type_display}}-{{item.id}}">+</a></td>
-		</tr>
-	{% endfor %}
-	{% else %}
-	<tr>No Pasta!</tr>
-	{% endif %}
-	</tbody>
-</table>
-<br>
-<table class="foodmenu" width="100%">
-	<tbody>
-	<tr>
-		<th colspan="3">Salads</th>
-	</tr>
-	{% if salad_list %}
-	{% for item in salad_list %}
-		<tr>
-			<td style="text-align: left;" width="50%">{{item.item_name}}</td>
-			<td width="25%">{{item.price}} <a href="" class="addItem" id="{{item.get_item_type_display}}-{{item.id}}">+</a></td>
-		</tr>
-	{% endfor %}
-	{% else %}
-	<tr>No Salad!</tr>
-	{% endif %}
-	</tbody>
-</table>
-<br>
-<table class="foodmenu" width="100%">
-	<tbody>
-		<tr>
-			<th colspan="3">Dinner Platters</th>
-		</tr>
-		{% if platter_list %}
-		<tr>
-			<td></td>
-			<td><i>Small</i></td>
-			<td><i>Large</i></td>
-		</tr>
-		{% for item in platter_list %}
-			{% if item.size == "S" %}
-				<!-- if item size is small -->
+		</tbody>
+	</table>
+	<br>
+	<table class="foodmenu" width="100%">
+		<tbody>
+			<tr>
+				<th colspan="3">Pasta</th>
+			</tr>
+			{% if pasta_list %}
+			{% for item in pasta_list %}
 				<tr>
-				<td width="50%">{{item.item_name}}</td>
-				<td width="25%">{{item.price}} <a href="" class="addItem" id="{{item.get_item_type_display}}-{{item.id}}">+</a></td>
-			{% endif %}
-			{% if item.size == "L" %}
-				<!-- if item size is large -->
-				<td width="25%">{{item.price}} <a href="" class="addItem" id="{{item.get_item_type_display}}-{{item.id}}">+</a></td>
+					<td style="text-align: left;" width="50%">{{item.item_name}}</td>
+					<td width="25%">{{item.price}} <a href="" class="addItem" id="{{item.get_item_type_display}}-{{item.id}}">+</a></td>
 				</tr>
+			{% endfor %}
+			{% else %}
+			<tr>No Pasta!</tr>
 			{% endif %}
-		{% endfor %}
-		{% else %}
-		<tr>No Platters!</tr>
-		{% endif %}
-	</tbody>
-</table>
+		</tbody>
+	</table>
+	<br>
+	<table class="foodmenu" width="100%">
+		<tbody>
+			<tr>
+				<th colspan="3">Salads</th>
+			</tr>
+			{% if salad_list %}
+			{% for item in salad_list %}
+				<tr>
+					<td style="text-align: left;" width="50%">{{item.item_name}}</td>
+					<td width="25%">{{item.price}} <a href="" class="addItem" id="{{item.get_item_type_display}}-{{item.id}}">+</a></td>
+				</tr>
+			{% endfor %}
+			{% else %}
+			<tr>No Salad!</tr>
+			{% endif %}
+		</tbody>
+	</table>
+	<br>
+	<table class="foodmenu" width="100%">
+		<tbody>
+			<tr>
+				<th colspan="3">Dinner Platters</th>
+			</tr>
+			{% if platter_list %}
+			<tr>
+				<td></td>
+				<td><i>Small</i></td>
+				<td><i>Large</i></td>
+			</tr>
+			{% for item in platter_list %}
+				{% if item.size == "S" %}
+					<tr>
+					<td width="50%">{{item.item_name}}</td>
+					<td width="25%">{{item.price}} <a href="" class="addItem" id="{{item.get_item_type_display}}-{{item.id}}">+</a></td>
+				{% endif %}
+				{% if item.size == "L" %}
+					<td width="25%">{{item.price}} <a href="" class="addItem" id="{{item.get_item_type_display}}-{{item.id}}">+</a></td>
+					</tr>
+				{% endif %}
+			{% endfor %}
+			{% else %}
+			<tr>No Platters!</tr>
+			{% endif %}
+		</tbody>
+	</table>
 </div>
 
 <script type="text/javascript">
@@ -282,6 +261,7 @@
 		document.querySelector('#item-size-section').style.display = "block";
 		document.querySelector('#item-size-display').innerHTML = "";
 
+		//reset pizza topping selection
 		document.querySelector('#topping-sel-section').style.display = "block";
 
 		//reset topping dropdowns
@@ -290,6 +270,7 @@
 
 		//reset sub addon div display to on display
 		document.querySelector('#sub-add-ons-section').style.display = "block";
+
 		//uncheck sub extras
 		document.querySelectorAll('.sub-extra').forEach(ex => {
 			ex.checked = false;
@@ -298,8 +279,11 @@
 		document.querySelectorAll('.steak-cheese-extra').forEach(ex => {
 			ex.style.display = "block";
 		});
+
+		//reset order item price
 		document.querySelector('#final-price').value = "0.00";
 	}
+
 	// When the user clicks on <span> (x), close the modal
 	spanX.onclick = function() {
 			resetOrderForm();
@@ -313,14 +297,6 @@
 					modal.style.display = "none";
 	    }
 	}
-	// document.querySelectorAll('.price').forEach(element => {
-	// 		const plus = document.createElement('a');
-	// 		plus.id=`{{item.get_item_type_display}}{{item.id}}`;
-	// 		plus.classList.add("addItem");
-	// 		plus.innerHTML= '+' ;
-	// 		plus.href="";
-	// 		element.appendChild(plus);
-	// });
 
 	document.addEventListener('DOMContentLoaded', () => {
 		//add topping list to drop down menus
@@ -331,132 +307,136 @@
 
 		//final price to be calculated in the order item form
 		let final_price = 0;
+
 		//on '+' button click
 		document.querySelectorAll('.addItem').forEach(add => {
 				add.onclick = () => {
-						modal.style.display = "block";
+					//display modal form
+					modal.style.display = "block";
 
-						// Initialize new request
-						const request = new XMLHttpRequest();
+					//Get the id of the item clicked
+					const addID = add.id;
 
-						//Get the id of the item clicked
-						const addID = add.id;
+					//split the id into two parts: item type and item ID
+					let item_type = addID.split('-')[0];
+					let item_id = parseInt(addID.split('-')[1]);
 
-						//split the id into two parts: item type and item ID
-						let item_type = addID.split('-')[0];
-						let item_id = parseInt(addID.split('-')[1]);
+					// Initialize new request
+					const request = new XMLHttpRequest();
+					//create a request to server with menu item route
+					request.open('POST', '/menuitem/');
 
-						//create a request to server with menu item route
-						request.open('POST', '/menuitem/');
+					// Callback function for when request completes
+					request.onload = () => {
 
-						// Callback function for when request completes
-						request.onload = () => {
+							// Extract menu item JSON data from request
+							const menuItem = JSON.parse(request.responseText);
 
-								// Extract menu item JSON data from request
-								const menuItem = JSON.parse(request.responseText);
-								if (menuItem.hasOwnProperty('error')){
-									document.querySelector('#menu-item-title').innerHTML=`${menuItem.error}`;
+							if (menuItem.hasOwnProperty('error')){
+								//display error if menu item was not found
+								document.querySelector('#menu-item-title').innerHTML=`${menuItem.error}`;
+							}
+							else{
+								// Load the form data accordingly
+								// display menu item type in the title
+								document.querySelector('#menu-item-title').innerHTML=`${menuItem.item_type} - ${menuItem.item_name}`
+								document.querySelector('#menu-item-id').value=`${item_id}`
+								console.log(document.querySelector('#menu-item-id').value)
+								//see if you can access the item's choice display values, instead of just the values.
+
+								//if item is not a salad or pasta display size menu options
+								if(menuItem.item_type == 'Salad' || menuItem.item_type == 'Pasta'){
+									document.querySelector('#item-size-section').style.display = "none";
 								}
 								else{
-									// Load the form data accordingly
-									// display menu item type in the title
-									document.querySelector('#menu-item-title').innerHTML=`${menuItem.item_type} - ${menuItem.item_name}`
-									document.querySelector('#menu-item-id').value=`${item_id}`
-									console.log(document.querySelector('#menu-item-id').value)
-									//see if you can access the item's choice display values, instead of just the values.
+									document.querySelector('#item-size-display').innerHTML = `${menuItem.size}`;
+								}
 
-									//if item is not a salad or pasta display size menu options
-									if(menuItem.item_type == 'Salad' || menuItem.item_type == 'Pasta'){
-										document.querySelector('#item-size-section').style.display = "none";
-									}
-									else{
-										document.querySelector('#item-size-display').innerHTML = `${menuItem.size}`;
-									}
-									if(menuItem.item_type =='Pizza'){
-										document.querySelector('#topping-sel-display').innerHTML = `${menuItem.topping_sel_display}`;
-										const numToppings = parseInt(`${menuItem.topping_sel}`);
+								if(menuItem.item_type =='Pizza'){
+									document.querySelector('#topping-sel-display').innerHTML = `${menuItem.topping_sel_display}`;
 
-										//based on the number of toppings of the JSON object returned
-										//insert the correct number of dropdowns
-										//or list the topping for special
-										// <select class="topping-selection-dropdown">
-										// 	<option value="Pepperoni">Pepperoni</option>
-										// </select>
-										if(numToppings<4){
-											if (numToppings>0){
-
-
-												for (i=0; i<numToppings; i++){
-													const toppingListDrop = document.createElement('select');
-													const space = document.createElement('p');
-													toppingListDrop.classList.add("topping-selection-dropdown");
-													toppingListDrop.classList.add("form-control");
-													toppingListDrop.name=`topping${i+1}`;
-													for (j=0; j<toppingList.length; j++){
-														var toppingListOption = document.createElement('option');
-														toppingListOption.value=toppingList[j];
-														toppingListOption.innerHTML=toppingList[j];
-														toppingListDrop.appendChild(toppingListOption);
-													}
-													space.appendChild(toppingListDrop)
-													document.querySelector('#topping-dropdowns').append(space);
+									//based on the number of toppings of the JSON object returned
+									//insert the correct number of dropdowns
+									//or list the topping for special
+									// <select class="topping-selection-dropdown">
+									// 	<option value="Pepperoni">Pepperoni</option>
+									// </select>
+									const numToppings = parseInt(`${menuItem.topping_sel}`);
+									if(numToppings<4){
+										if (numToppings>0){
+											for (i=0; i<numToppings; i++){
+												const toppingListDrop = document.createElement('select');
+												const space = document.createElement('p');
+												toppingListDrop.classList.add("topping-selection-dropdown");
+												toppingListDrop.classList.add("form-control"); //form-control for bootstrap appearance
+												toppingListDrop.name=`topping${i+1}`;
+												for (j=0; j<toppingList.length; j++){
+													var toppingListOption = document.createElement('option');
+													toppingListOption.value=toppingList[j];
+													toppingListOption.innerHTML=toppingList[j];
+													toppingListDrop.appendChild(toppingListOption);
 												}
-											}
-											else{
-												//cheese pizza
-												document.querySelector('#topping-dropdown-section').style.display = "none";
+												space.appendChild(toppingListDrop)
+												document.querySelector('#topping-dropdowns').append(space);
 											}
 										}
 										else{
-											//special pizza
-											const specialPizzaToppings = ['Sausage','Green Peppers','Onions','Mushrooms'];
-											const toppingList = document.createElement('ul');
-											for (i=0; i<specialPizzaToppings.length; i++){
-												const topping = document.createElement('li');
-												topping.innerHTML = specialPizzaToppings[i];
-												toppingList.appendChild(topping);
-											}
-											document.querySelector('#topping-dropdowns').append(toppingList);
-										}
-
-
-									}
-									else{
-										document.querySelector('#topping-sel-section').style.display = "none";
-										document.querySelector('#topping-dropdown-section').style.display = "none";
-
-									}
-									if(menuItem.item_type != 'Sub'){
-										document.querySelector('#sub-add-ons-section').style.display = "none";
-									}
-									else{
-
-										if (menuItem.item_name !='Steak + Cheese'){
-											document.querySelectorAll('.steak-cheese-extra').forEach(ex => {
-												ex.style.display = "none";
-											});
+											//cheese pizza
+											document.querySelector('#topping-dropdown-section').style.display = "none";
 										}
 									}
-
-									final_price = parseFloat(menuItem.price);
-									document.querySelector('#final-price').value = `${final_price.toFixed(2)}`;
-
+									else{
+										//special pizza
+										const specialPizzaToppings = ['Sausage','Green Peppers','Onions','Mushrooms'];
+										const toppingList = document.createElement('ul');
+										for (i=0; i<specialPizzaToppings.length; i++){
+											const topping = document.createElement('li');
+											topping.innerHTML = specialPizzaToppings[i];
+											toppingList.appendChild(topping);
+										}
+										document.querySelector('#topping-dropdowns').append(toppingList);
+									}
+								}
+								else{
+									//if item is not a pizza, hide the topping sections
+									document.querySelector('#topping-sel-section').style.display = "none";
+									document.querySelector('#topping-dropdown-section').style.display = "none";
+								}
+								if(menuItem.item_type != 'Sub'){
+									//hide sub add on section if item is not a sub
+									document.querySelector('#sub-add-ons-section').style.display = "none";
+								}
+								else{
+									//hide steak and cheese extras if not a steak and cheese sub
+									if (menuItem.item_name !='Steak + Cheese'){
+										document.querySelectorAll('.steak-cheese-extra').forEach(ex => {
+											ex.style.display = "none";
+										});
+									}
 								}
 
-						}
+								//display order item final price
+								final_price = parseFloat(menuItem.price);
+								document.querySelector('#final-price').value = `${final_price.toFixed(2)}`;
 
-						// Add data to send with request (tell Flask what currency was typed in the form) (this could also have been done with HTML, naming the form input with name="currency")
-						const data = new FormData();
-						data.append('item_type', item_type);
-						data.append('item_id', item_id);
-						// Send request
-						request.setRequestHeader("X-CSRFToken", csrftoken);
-						request.send(data);
-						//stop page from reloading after request is sent
-						return false;
+							}
+
+					}
+
+					// Add data to send with request (tell Flask what currency was typed in the form) (this could also have been done with HTML, naming the form input with name="currency")
+					const data = new FormData();
+					data.append('item_type', item_type);
+					data.append('item_id', item_id);
+					// Send request
+					request.setRequestHeader("X-CSRFToken", csrftoken);
+					request.send(data);
+					//stop page from reloading after request is sent
+					return false;
 				};
 		});
 		document.querySelectorAll('.sub-extra').forEach(check => {
+			//add 0.50 if sub add on check box is checked for subs
+			//dynamically update final price as needed
 			check.onclick = () => {
 				if (check.checked == true) {
 					final_price = (final_price+0.50);
@@ -471,6 +451,7 @@
 </script>
 
 {% else %}
+{# User must log in before they can view the menu #}
 <div class="container col-10">
 	<p>Please <a href="{% url 'orders:login' %}">log in</a> or <a href="{% url 'orders:register' %}">register</a> to view the menu and order food.</p>
 </div>
