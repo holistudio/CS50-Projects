@@ -69,7 +69,7 @@
 		<form id="item-order-form" action="{% url 'orders:add_item_to_cart' %}" method="post">
 			{% csrf_token %}
 			<h4 id="menu-item-title"></h4>
-
+			<p></p>
 			<p id="item-size-section">Size: <span id="item-size-display"></span></p>
 
 			<p id="topping-sel-section">Topping Choice: <span id="topping-sel-display"></span></p>
