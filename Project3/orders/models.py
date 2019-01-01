@@ -36,16 +36,26 @@ class MenuItem(models.Model):
 
 	price = models.DecimalField(max_digits=5, decimal_places=2,validators=[MinValueValidator(Decimal('0.00'))])
 	def __str__(self):
-		try:
-			return str(f"{self.get_item_type_display()} - {self.item_name} - {self.pizzamenuitem.size} - {self.pizzamenuitem.topping_sel}");
-		except PizzaMenuItem.DoesNotExist:
-			try:
-				return str(f"{self.get_item_type_display()} - {self.item_name} - {self.submenuitem.size}");
-			except SubMenuItem.DoesNotExist:
-				try:
-					return str(f"{self.get_item_type_display()} - {self.item_name} - {self.plattermenuitem.size}");
-				except:
-					return str(f"{self.get_item_type_display()} - {self.item_name}");
+		def pizzaToString():
+			return self.pizzamenuitem.__str__();
+		def subToString():
+			return self.submenuitem.__str__();
+		def platterToString():
+			return self.plattermenuitem.__str__();
+		def saladToString():
+			return self.saladmenuitem.__str__();
+		def pastaToString():
+			return self.pastamenuitem.__str__();
+		def defaultToString():
+			return str(f"{self.get_item_type_display()} - {self.item_name} - ${self.price}");
+		switcher = {
+			PIZZA: pizzaToString,
+			SUB: subToString,
+			PLATTER: platterToString,
+			SALAD: saladToString,
+			PASTA: pastaToString,
+		}
+		return switcher.get(self.item_type, defaultToString)();
 
 	class Meta:
 			verbose_name = "Menu Item"
@@ -76,7 +86,7 @@ class PizzaMenuItem(MenuItem):
 	topping_sel = models.CharField(max_length=1, choices = TOPPING_SEL_CHOICES, default = '0', verbose_name="Topping Selection")
 	#"toString method"
 	def __str__(self):
-		return str(f"{self.item_type} - {self.item_name} - {self.size} - {self.topping_sel}");
+		return str(f"{self.get_item_type_display()} - {self.item_name} - {self.get_size_display()} - {self.pizzamenuitem.get_topping_sel_display()} - ${self.price}");
 
 	class Meta:
 			verbose_name = "Pizza Menu Item"
@@ -97,19 +107,19 @@ class SubMenuItem(MenuItem):
 
 	size = models.CharField(max_length=1, choices = SIZE_CHOICES, default = SMALL)
 	def __str__(self):
-		return str(f"{self.item_type} - {self.item_name} - {self.size}");
+		return str(f"{self.get_item_type_display()} - {self.item_name} - {self.get_size_display()} - ${self.price}");
 	class Meta:
 		verbose_name = "Sub Menu Item"
 
 class SaladMenuItem(MenuItem):
 	def __str__(self):
-		return str(f"{self.item_type} - {self.item_name}");
+		return str(f"{self.get_item_type_display()} - {self.item_name} - ${self.price}");
 	class Meta:
 		verbose_name = "Salad Menu Item"
 
 class PastaMenuItem(MenuItem):
 	def __str__(self):
-		return str(f"{self.item_type} - {self.item_name}");
+		return str(f"{self.get_item_type_display()} - {self.item_name} - ${self.price}");
 	class Meta:
 		verbose_name = "Pasta Menu Item"
 
@@ -121,7 +131,7 @@ class PlatterMenuItem(MenuItem):
 	class Meta:
 		verbose_name = "Platter Menu Item"
 	def __str__(self):
-		return str(f"{self.item_type} - {self.item_name} - {self.size}");
+		return str(f"{self.get_item_type_display()} - {self.item_name} - {self.get_size_display()} - ${self.price}");
 
 #Shopping Cart (one shopping cart to many order items)
 class ShoppingCart (models.Model):
@@ -131,15 +141,19 @@ class ShoppingCart (models.Model):
 	#compute the total cart price
 	total_cost = models.DecimalField(max_digits=5, default = Decimal('0.00'),decimal_places=2,validators=[MinValueValidator(Decimal('0.00'))]);
 
+	def total_cost_dollars(self):
+		return "$ %.2f" % float(self.total_cost) if self.total_cost else 0;
+	total_cost_dollars.short_description = "Total Cost"
+
 	ORDER_STATUS_POSS = (
 		('0', "In Process"),
-		('1', "Checked Out"),
+		('1', "Order Placed"),
 	);
 
 	order_status = models.CharField(max_length=1, choices = ORDER_STATUS_POSS, default = '0', verbose_name="Order Status");
 
 	conf_num = models.IntegerField(blank=True, null=True, verbose_name="Order Confirmation #");
-	checkout_time = models.DateTimeField(blank=True, null=True, verbose_name="Time Checked Out");
+	checkout_time = models.DateTimeField(blank=True, null=True, verbose_name="Time Order Placed");
 
 	class Meta:
 		verbose_name = "Shopping Cart"
@@ -163,6 +177,9 @@ class OrderItem (models.Model):
 	#final price includes the list of price of add ons
 	final_price = models.DecimalField(max_digits=5, decimal_places=2,validators=[MinValueValidator(Decimal('0.00'))]);
 
+	def final_price_dollars(self):
+		return "$ %.2f" % float(self.final_price) if self.final_price else "$ 0.00";
+	final_price_dollars.short_description = "Final Price"
 	add_ons = models.CharField(blank=True, max_length=100); #list of add ons for pizza or subs, separated by commas, can be blank
 
 	#returns the add ons as an array
@@ -175,10 +192,11 @@ class OrderItem (models.Model):
 		super(OrderItem, self).delete()
 		self.shopping_cart.save();
 	def save(self):
+		self.final_price = self.menu_item.price;
 		if self.menu_item.item_type=='SUB':
 			print(self.get_add_ons_list)
-			self.final_price = self.menu_item.price + Decimal((len(self.add_ons.split(',')))*0.5);
+			self.final_price = self.final_price + Decimal((len(self.add_ons.split(',')))*0.5);
 		super(OrderItem, self).save()
 		self.shopping_cart.save();
 	def __str__(self):
-		return str(f"{self.menu_item.item_type} - {self.menu_item.item_name} - {self.final_price}");
+		return str(f"{self.menu_item.get_item_type_display()} - {self.menu_item.item_name} - ${self.final_price} - {self.shopping_cart}");
