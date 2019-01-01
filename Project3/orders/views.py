@@ -99,21 +99,22 @@ def add_item_to_cart(request):
 				if num_toppings<4:
 					for i in range(0,int(menu_item.pizzamenuitem.topping_sel)):
 						key = str(f"topping{i+1}");
-						add_ons = str(f"{add_ons}{request.POST[key]}, ");
+						add_ons = str(f"{add_ons},{request.POST[key]}");
 				else:
-					add_ons = str(f"{add_ons}Sausage, Green Peppers, Onions, Mushrooms, ");
+					add_ons = str(f"{add_ons}Sausage,Green Peppers,Onions,Mushrooms");
 
 		#sub add ons
 		steak_sub_add_ons = ['extra_mushrooms','extra_green_peppers','extra_onions']
 		if menu_item.item_type=='SUB':
 			if 'extra_cheese' in request.POST.keys():
-				add_ons = str(f"{add_ons}Extra Cheese, ");
+				add_ons = str(f"{add_ons},Extra Cheese");
 
 			if menu_item.item_name == 'Steak + Cheese':
 				for i in range(0,len(steak_sub_add_ons)):
 					if steak_sub_add_ons[i] in request.POST.keys():
-						add_ons = str(f"{add_ons}{request.POST[steak_sub_add_ons[i]]}, ");
-
+						add_ons = str(f"{add_ons},{request.POST[steak_sub_add_ons[i]]}");
+		if add_ons[0]==',':
+			add_ons = add_ons[1:];
 		#final price from form
 		final_price = request.POST['price'];
 
