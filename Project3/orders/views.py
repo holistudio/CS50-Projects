@@ -167,12 +167,20 @@ def check_out(request):
 			conf_num = math.floor(random.random()*1000000);
 			shopping_cart.conf_num = conf_num;
 			shopping_cart.save();
+			shopping_cart_items = OrderItem.objects.filter(shopping_cart=shopping_cart);
+			context = {
+				'shopping_cart': shopping_cart,
+				'shopping_cart_items': shopping_cart_items,
+				'first_name':request.user.first_name,
+			}
+			html_message = loader.render_to_string('orders/order_conf.html',context)
 			send_mail(
 			    'Your order for PizzaHub is in the works!',
-			    str(f"Your order is in the works! Order Confirmation #: {conf_num}"),
+			    '',
 			    os.getenv("SERVER_NO_REPLY_EMAIL"),
 			    [shopping_cart.user.email],
 			    fail_silently=False,
+				html_message=html_message
 			);
 			messages.add_message(request, messages.SUCCESS, str(f"Your order is in the works! Order Confirmation #: {conf_num}"))
 			return HttpResponseRedirect(reverse("orders:index"));

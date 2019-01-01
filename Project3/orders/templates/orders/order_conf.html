@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html lang="en" dir="ltr">
+	<head>
+		<meta charset="utf-8">
+		<title>Order Confirmation</title>
+		<link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.1.3/css/bootstrap.min.css" integrity="sha384-MCw98/SFnGE8fJT3GXwEOngsV7Zt27NXFoaoApmYm81iuXoPkFOJwJ8ERdknLPMO" crossorigin="anonymous">
+		<style type="text/css">
+			td, th{
+				padding-bottom:1em;
+			}
+		</style>
+	</head>
+	<body>
+		<p>{{first_name}},</p>
+		<p>Your order is in the works! Order Confirmation #: {{shopping_cart.conf_num}}</p>
+		<table width="25%">
+			<tbody>
+				<tr>
+					<th style="text-align:left">Item</th>
+					<th style="text-align:right">Price</th>
+				</tr>
+					{% for item in shopping_cart_items %}
+					<tr>
+						<td name = "item">{{item.menu_item}}
+							{% if item.get_add_ons_list|length > 0 %}
+							<p class="text-secondary" style="margin-bottom:0;text-indent:1em">Add Ons:</p>
+								<ul class="text-secondary" style="margin-bottom:0;list-style: none">
+									{% for add_on in item.get_add_ons_list %}
+										<li>{{ add_on }}</li>
+									{% endfor %}</ul>
+							{% endif %}
+						</td>
+						<td style="text-align:right">{{item.final_price}}</td>
+					</tr>
+					{% endfor %}
+					<tr>
+						<td>Total: </td><td id="total-cost" style="text-align:right">{{shopping_cart.total_cost}}</td><td></td>
+					</tr>
+			</tbody>
+		</table>
+	</body>
+</html>
