@@ -161,3 +161,6 @@ class OrderItem (models.Model):
 		return self.add_ons.split(',')[0:len(self.add_ons.split(','))-1];
 
 	shopping_cart = models.ForeignKey(ShoppingCart, on_delete=models.CASCADE);
+
+	def __str__(self):
+		return str(f"{self.menu_item.item_type} - {self.menu_item.item_name} - {self.final_price}");
