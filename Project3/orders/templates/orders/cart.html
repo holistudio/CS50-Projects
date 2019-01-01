@@ -54,7 +54,7 @@
 <script type="text/javascript">
 	document.addEventListener('DOMContentLoaded', () => {
 		let total_cost = parseFloat(document.querySelector('#total-cost').innerHTML);
-
+		let num_cart_items = parseInt(document.querySelector('#num-cart-items').innerHTML);
 		document.querySelectorAll('.removeItem').forEach(remove => {
 				remove.onclick = () => {
 					const request = new XMLHttpRequest();
@@ -83,6 +83,16 @@
 					table_row = remove.parentElement.parentElement;
 					table = table_row.parentElement;
 					table.removeChild(table_row);
+
+					//update shoping cart item number display in navbar
+					num_cart_items = num_cart_items - 1;
+					if(num_cart_items > 0){
+						document.querySelector('#num-cart-items').innerHTML=`(${num_cart_items})`;
+					}
+					else{
+						document.querySelector('#num-cart-items').innerHTML=``;
+					}
+
 					//stop page from reloading after request is sent
 					return false;
 				}
