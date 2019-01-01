@@ -234,4 +234,4 @@ def register_view(request):
 			messages.add_message(request, messages.SUCCESS, str(f"You're registered!"))
 			return HttpResponseRedirect(reverse("orders:index"))
 	else:
-		return HttpResponseRedirect(reverse("orders:register"))
+		return render(request, "orders/register.html")
