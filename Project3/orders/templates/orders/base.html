@@ -79,7 +79,7 @@
 
                     </ul>
                     <div class="nav-item">
-                      <a href="{% url 'orders:shopping_cart' %}" class="nav-link">Shopping Cart <span id="num-cart-items">{% if shopping_cart %}{% if shopping_cart_items|length > 0 %} ({{shopping_cart_items|length}}){% endif %}{% endif %}</span></a>
+                      <a href="{% url 'orders:shopping_cart' %}" class="nav-link">Shopping Cart <span id="num-cart-items">{% if shopping_cart %}{% if shopping_cart_items|length > 0 %}({{shopping_cart_items|length}}){% endif %}{% endif %}</span></a>
                     </div>
             </nav>
             {% block body %}
