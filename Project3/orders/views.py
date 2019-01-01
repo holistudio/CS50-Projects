@@ -84,19 +84,18 @@ def item_display(request):
 			itemJSON={'size' : item.get_size_display()};
 		else:
 			#error
-			print('Error: item type not recognized');
+			itemJSON['error'] = 'Error - Item Not Found';
 		itemJSON['item_type'] = item.get_item_type_display();
 		itemJSON['item_name'] = item.item_name;
 		itemJSON['price'] = item.price;
-	return JsonResponse(itemJSON);
+		return JsonResponse(itemJSON);
+	else:
+		return HttpResponseRedirect(reverse("orders:index"))
 
 def add_item_to_cart(request):
 	if request.method == 'POST':
-
-
 		#get stuff from form
 		menu_item = MenuItem.objects.get(id = request.POST["menu_item_id"]);
-		# print(menu_item.pizzamenuitem.topping_sel);
 
 		add_ons = '';
 		# pizza add ons
@@ -137,17 +136,20 @@ def add_item_to_cart(request):
 	return HttpResponseRedirect(reverse("orders:index"))
 
 def shopping_cart(request):
-	shopping_cart= get_current_shopping_cart(request);
-	shopping_cart_items = OrderItem.objects.filter(shopping_cart=shopping_cart);
-	context = {
-		'shopping_cart': shopping_cart,
-		'shopping_cart_items': shopping_cart_items,
-	}
-	template = loader.get_template('orders/cart.html')
-	return HttpResponse(template.render(context, request));
+	if request.user.is_authenticated:
+		shopping_cart= get_current_shopping_cart(request);
+		shopping_cart_items = OrderItem.objects.filter(shopping_cart=shopping_cart);
+		context = {
+			'shopping_cart': shopping_cart,
+			'shopping_cart_items': shopping_cart_items,
+		}
+		template = loader.get_template('orders/cart.html')
+		return HttpResponse(template.render(context, request));
+	else:
+		return HttpResponseRedirect(reverse("orders:index"))
+
 
 def remove_cart_item(request):
-
 	if request.method == 'POST':
 		#get order item id to be deleted
 		item_id = request.POST["item_id"];
@@ -155,8 +157,8 @@ def remove_cart_item(request):
 		#delete item
 		o.delete();
 		o.shopping_cart.save();
-		#return to shopping cart page
-		return HttpResponseRedirect(reverse("orders:shopping_cart"))
+	#return to shopping cart page
+	return HttpResponseRedirect(reverse("orders:shopping_cart"))
 
 def check_out(request):
 	if request.method == 'POST':
@@ -187,11 +189,12 @@ def check_out(request):
 		else:
 			messages.add_message(request, messages.ERROR, str(f"Please add items before checking out"))
 			return HttpResponseRedirect(reverse("orders:shopping_cart"))
+	else:
+		messages.add_message(request, messages.ERROR, str(f"Please check out by clicking the checkout button below."))
+		return HttpResponseRedirect(reverse("orders:shopping_cart"))
 
 def login_view(request):
-	if request.method == 'GET':
-		return render(request, "orders/login.html")
-	elif request.method == 'POST':
+	if request.method == 'POST':
 		username = request.POST["username"]
 		password = request.POST["password"]
 		user = authenticate(request, username=username, password=password)
@@ -202,6 +205,8 @@ def login_view(request):
 		else:
 			messages.add_message(request, messages.ERROR, str(f"Invalid username or password"))
 			return HttpResponseRedirect(reverse("orders:login"))
+	else:
+		return render(request, "orders/login.html")
 
 def logout_view(request):
 	logout(request)
@@ -209,7 +214,6 @@ def logout_view(request):
 
 def register_view(request):
 	if request.method =="POST":
-
 		# Get form information.
 		username = request.POST["username"]
 		password = request.POST["password"]

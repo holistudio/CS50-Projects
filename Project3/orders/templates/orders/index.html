@@ -1,7 +1,16 @@
 {% extends "orders/base.html" %}
 
 {% block body %}
-
+{% if messages %}
+{% for message in messages %}
+	{% if message.level == DEFAULT_MESSAGE_LEVELS.SUCCESS %}
+	<div class="alert alert-success" role="alert">
+			{{ message }}
+	</div>
+	{% endif %}
+{% endfor %}
+{% endif %}
+{% if user.is_authenticated %}
 <style type="text/css">
 
 /* The Modal (background) */
@@ -49,15 +58,7 @@
 }
 </style>
 
-{% if messages %}
-{% for message in messages %}
-	{% if message.level == DEFAULT_MESSAGE_LEVELS.SUCCESS %}
-	<div class="alert alert-success" role="alert">
-			{{ message }}
-	</div>
-	{% endif %}
-{% endfor %}
-{% endif %}
+
 <script type="text/javascript">
 
 </script>
@@ -270,10 +271,7 @@
 </table>
 </div>
 
-
 <script type="text/javascript">
-
-
 	// Get the modal
 	var modal = document.getElementById('OrderItemModal');
 	// Get the <span> element that closes the modal
@@ -356,89 +354,95 @@
 
 								// Extract menu item JSON data from request
 								const menuItem = JSON.parse(request.responseText);
-
-								// Load the form data accordingly
-								// display menu item type in the title
-								document.querySelector('#menu-item-title').innerHTML=`${menuItem.item_type} - ${menuItem.item_name}`
-								document.querySelector('#menu-item-id').value=`${item_id}`
-								console.log(document.querySelector('#menu-item-id').value)
-								//see if you can access the item's choice display values, instead of just the values.
-
-								//if item is not a salad or pasta display size menu options
-								if(menuItem.item_type == 'Salad' || menuItem.item_type == 'Pasta'){
-									document.querySelector('#item-size-section').style.display = "none";
+								if (menuItem.hasOwnProperty('error')){
+									document.querySelector('#menu-item-title').innerHTML=`${menuItem.error}`;
 								}
 								else{
-									document.querySelector('#item-size-display').innerHTML = `${menuItem.size}`;
-								}
-								if(menuItem.item_type =='Pizza'){
-									document.querySelector('#topping-sel-display').innerHTML = `${menuItem.topping_sel_display}`;
-									const numToppings = parseInt(`${menuItem.topping_sel}`);
+									// Load the form data accordingly
+									// display menu item type in the title
+									document.querySelector('#menu-item-title').innerHTML=`${menuItem.item_type} - ${menuItem.item_name}`
+									document.querySelector('#menu-item-id').value=`${item_id}`
+									console.log(document.querySelector('#menu-item-id').value)
+									//see if you can access the item's choice display values, instead of just the values.
 
-									//based on the number of toppings of the JSON object returned
-									//insert the correct number of dropdowns
-									//or list the topping for special
-									// <select class="topping-selection-dropdown">
-									// 	<option value="Pepperoni">Pepperoni</option>
-									// </select>
-									if(numToppings<4){
-										if (numToppings>0){
+									//if item is not a salad or pasta display size menu options
+									if(menuItem.item_type == 'Salad' || menuItem.item_type == 'Pasta'){
+										document.querySelector('#item-size-section').style.display = "none";
+									}
+									else{
+										document.querySelector('#item-size-display').innerHTML = `${menuItem.size}`;
+									}
+									if(menuItem.item_type =='Pizza'){
+										document.querySelector('#topping-sel-display').innerHTML = `${menuItem.topping_sel_display}`;
+										const numToppings = parseInt(`${menuItem.topping_sel}`);
+
+										//based on the number of toppings of the JSON object returned
+										//insert the correct number of dropdowns
+										//or list the topping for special
+										// <select class="topping-selection-dropdown">
+										// 	<option value="Pepperoni">Pepperoni</option>
+										// </select>
+										if(numToppings<4){
+											if (numToppings>0){
 
 
-											for (i=0; i<numToppings; i++){
-												const toppingListDrop = document.createElement('select');
-												const space = document.createElement('p');
-												toppingListDrop.classList.add("topping-selection-dropdown");
-												toppingListDrop.classList.add("form-control");
-												toppingListDrop.name=`topping${i+1}`;
-												for (j=0; j<toppingList.length; j++){
-													var toppingListOption = document.createElement('option');
-													toppingListOption.value=toppingList[j];
-													toppingListOption.innerHTML=toppingList[j];
-													toppingListDrop.appendChild(toppingListOption);
+												for (i=0; i<numToppings; i++){
+													const toppingListDrop = document.createElement('select');
+													const space = document.createElement('p');
+													toppingListDrop.classList.add("topping-selection-dropdown");
+													toppingListDrop.classList.add("form-control");
+													toppingListDrop.name=`topping${i+1}`;
+													for (j=0; j<toppingList.length; j++){
+														var toppingListOption = document.createElement('option');
+														toppingListOption.value=toppingList[j];
+														toppingListOption.innerHTML=toppingList[j];
+														toppingListDrop.appendChild(toppingListOption);
+													}
+													space.appendChild(toppingListDrop)
+													document.querySelector('#topping-dropdowns').append(space);
 												}
-												space.appendChild(toppingListDrop)
-												document.querySelector('#topping-dropdowns').append(space);
+											}
+											else{
+												//cheese pizza
+												document.querySelector('#topping-dropdown-section').style.display = "none";
 											}
 										}
 										else{
-											//cheese pizza
-											document.querySelector('#topping-dropdown-section').style.display = "none";
+											//special pizza
+											const specialPizzaToppings = ['Sausage','Green Peppers','Onions','Mushrooms'];
+											const toppingList = document.createElement('ul');
+											for (i=0; i<specialPizzaToppings.length; i++){
+												const topping = document.createElement('li');
+												topping.innerHTML = specialPizzaToppings[i];
+												toppingList.appendChild(topping);
+											}
+											document.querySelector('#topping-dropdowns').append(toppingList);
 										}
+
+
 									}
 									else{
-										//special pizza
-										const specialPizzaToppings = ['Sausage','Green Peppers','Onions','Mushrooms'];
-										const toppingList = document.createElement('ul');
-										for (i=0; i<specialPizzaToppings.length; i++){
-											const topping = document.createElement('li');
-											topping.innerHTML = specialPizzaToppings[i];
-											toppingList.appendChild(topping);
+										document.querySelector('#topping-sel-section').style.display = "none";
+										document.querySelector('#topping-dropdown-section').style.display = "none";
+
+									}
+									if(menuItem.item_type != 'Sub'){
+										document.querySelector('#sub-add-ons-section').style.display = "none";
+									}
+									else{
+
+										if (menuItem.item_name !='Steak + Cheese'){
+											document.querySelectorAll('.steak-cheese-extra').forEach(ex => {
+												ex.style.display = "none";
+											});
 										}
-										document.querySelector('#topping-dropdowns').append(toppingList);
 									}
 
+									final_price = parseFloat(menuItem.price);
+									document.querySelector('#final-price').value = `${final_price.toFixed(2)}`;
 
 								}
-								else{
-									document.querySelector('#topping-sel-section').style.display = "none";
-									document.querySelector('#topping-dropdown-section').style.display = "none";
 
-								}
-								if(menuItem.item_type != 'Sub'){
-									document.querySelector('#sub-add-ons-section').style.display = "none";
-								}
-								else{
-
-									if (menuItem.item_name !='Steak + Cheese'){
-										document.querySelectorAll('.steak-cheese-extra').forEach(ex => {
-											ex.style.display = "none";
-										});
-									}
-								}
-
-								final_price = parseFloat(menuItem.price);
-								document.querySelector('#final-price').value = `${final_price.toFixed(2)}`;
 						}
 
 						// Add data to send with request (tell Flask what currency was typed in the form) (this could also have been done with HTML, naming the form input with name="currency")
@@ -468,4 +472,10 @@
 		// };
 	});
 </script>
+
+{% else %}
+<div class="container col-10">
+	<p>Please <a href="{% url 'orders:login' %}">log in</a> or <a href="{% url 'orders:register' %}">register</a> to view the menu and order food.</p>
+</div>
+{% endif %}
 {% endblock %}
