@@ -34,37 +34,41 @@ def get_current_shopping_cart(request):
 
 # Create your views here.
 def index(request):
-	#load menu items in separate lists
-	pizza_list = PizzaMenuItem.objects.order_by('item_name', 'topping_sel', 'price').filter(item_name='Regular'); #order by item name then topping then price
-	sicilian_pizza_list = PizzaMenuItem.objects.order_by('item_name', 'topping_sel', 'price').filter(item_name='Sicilian');
-	subs_list = SubMenuItem.objects.order_by('item_name', '-size');
-	pasta_list = PastaMenuItem.objects.order_by('price');
-	salad_list = SaladMenuItem.objects.order_by('price');
-	platter_list = PlatterMenuItem.objects.order_by('item_name', '-size');
-	topping_queryDict = list(ToppingMenuItem.objects.values('item_name'));
-	topping_list = [];
-	for item in topping_queryDict:
-		topping_list.append(item['item_name']);
+	#see if user is logged in or not
+	if request.user.is_authenticated:
+		template = loader.get_template('orders/index.html')
+		#load menu items in separate lists
+		pizza_list = PizzaMenuItem.objects.order_by('item_name', 'topping_sel', 'price').filter(item_name='Regular'); #order by item name then topping then price
+		sicilian_pizza_list = PizzaMenuItem.objects.order_by('item_name', 'topping_sel', 'price').filter(item_name='Sicilian');
+		subs_list = SubMenuItem.objects.order_by('item_name', '-size');
+		pasta_list = PastaMenuItem.objects.order_by('price');
+		salad_list = SaladMenuItem.objects.order_by('price');
+		platter_list = PlatterMenuItem.objects.order_by('item_name', '-size');
+		topping_queryDict = list(ToppingMenuItem.objects.values('item_name'));
+		topping_list = [];
+		for item in topping_queryDict:
+			topping_list.append(item['item_name']);
 
-	template = loader.get_template('orders/index.html')
-	context = {
-		'pizza_list': pizza_list,
-		'sicilian_pizza_list': sicilian_pizza_list,
-		'subs_list': subs_list,
-		'pasta_list': pasta_list,
-		'salad_list': salad_list,
-		'platter_list': platter_list,
-		'topping_list':topping_list,
-	}
+		context = {
+			'pizza_list': pizza_list,
+			'sicilian_pizza_list': sicilian_pizza_list,
+			'subs_list': subs_list,
+			'pasta_list': pasta_list,
+			'salad_list': salad_list,
+			'platter_list': platter_list,
+			'topping_list':topping_list,
+		}
 
-	#load shopping cart into context (esp for displaying shopping cart item count in navbar)
-	shopping_cart = get_current_shopping_cart(request);
-	if shopping_cart != 'NO_USER_LOGGED_IN':
-		context['shopping_cart'] = shopping_cart;
-		shopping_cart_items = OrderItem.objects.filter(shopping_cart=shopping_cart);
-		context['shopping_cart_items'] = shopping_cart_items;
-
-	return HttpResponse(template.render(context, request))
+		#load shopping cart into context (esp for displaying shopping cart item count in navbar)
+		shopping_cart = get_current_shopping_cart(request);
+		if shopping_cart != 'NO_USER_LOGGED_IN':
+			context['shopping_cart'] = shopping_cart;
+			shopping_cart_items = OrderItem.objects.filter(shopping_cart=shopping_cart);
+			context['shopping_cart_items'] = shopping_cart_items;
+		return HttpResponse(template.render(context, request))
+	else:
+		#if user is not logged in, just display the front page, without loading context 
+		return render(request, "orders/index.html")
 
 def item_display(request):
 	if request.method == 'POST':
@@ -222,7 +226,7 @@ def login_view(request):
 		user = authenticate(request, username=username, password=password)
 		if user is not None:
 			login(request, user)
-			#find user's in-process shopping cart or create a new one 
+			#find user's in-process shopping cart or create a new one
 			get_current_shopping_cart(request);
 			return HttpResponseRedirect(reverse("orders:index"))
 		else:
