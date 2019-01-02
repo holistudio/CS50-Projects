@@ -2,7 +2,6 @@ import csv
 
 from orders.models import PizzaMenuItem, SubMenuItem, PastaMenuItem, SaladMenuItem, PlatterMenuItem, ToppingMenuItem
 
-
 f = open("menu.csv")
 reader = csv.reader(f)
 
