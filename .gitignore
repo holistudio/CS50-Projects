@@ -7,3 +7,4 @@
 *.sqlite3
 Project1/flask_session/
 *.pyc
+Project3/db.sqlite3
