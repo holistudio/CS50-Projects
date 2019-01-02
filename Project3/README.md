@@ -8,9 +8,9 @@ The main files for the site's backend are:
 - **models.py:** defines the models for menu items, order items (menu items with add on's/extras, etc), and shopping cart.
 - **views.py:** defines the views for the different pages, including what database objects/queries to make.
 - **urls.py:** corresponding url patterns defined here.
-- **admin.py** administrative view of menu items and shopping carts (including those in-process and complete orders placed)
+- **admin.py:** administrative view of menu items and shopping carts (including those in-process and complete orders placed)
 
-#### templates folder
+### templates folder
 The front-end menu display, order item forms, shopping cart page, and user login/registration all live here.
 
 ## Personal Touch: Order Confirmation Email
@@ -44,9 +44,9 @@ With the above in mind, it is only possible to send emails from your Gmail accou
 import.py and menu.csv were used to import the restaurant's existing menu into the database using Django's shell interface (`exec(open('import.py').read())`)
 
 ## Technical References
-The Django tutorials were incredibly helpful for getting situated before starting the project: https://docs.djangoproject.com/en/2.1/intro/tutorial01/. My follow-along files are in the django-tutorial folder.
+The [Django tutorials](https://docs.djangoproject.com/en/2.1/intro/tutorial01/) were incredibly helpful for getting situated before starting the project. My follow-along files are in the django-tutorial folder.
 
-AJAX with CSRF tokens: Certain features of the website use AJAX requests, which can be tricky to configure with Django's CSRF token requirements. The following code is included in orders/base.html to retrieve the csrf token and have any other webpage inheriting base.html to access the csrf token (using the JavaScript Cookie Library):
+AJAX with CSRF tokens: Certain features of the website use AJAX requests, which can be tricky to configure with Django's CSRF token requirements. The following code is included in orders/base.html to retrieve the csrf token and have any other webpage inheriting base.html to access the csrf token (using the [JavaScript Cookie Library](https://github.com/js-cookie/js-cookie/)):
 ```
 <script src="https://cdn.jsdelivr.net/npm/js-cookie@2/src/js.cookie.min.js"></script>
 <script type="text/javascript">
@@ -54,10 +54,10 @@ AJAX with CSRF tokens: Certain features of the website use AJAX requests, which 
   var csrftoken = Cookies.get('csrftoken');
 </script>
 ```
-Requests are then appended with csrf token in javascript:
+A CSRF token header is then added to requests when made:
 ```
 request.setRequestHeader("X-CSRFToken", csrftoken);
 ```
-Full documentation of how this works is in Django's documentation (https://docs.djangoproject.com/en/2.1/ref/csrf/#ajax
+Full documentation of how this works is in [Django's documentation](https://docs.djangoproject.com/en/2.1/ref/csrf/#ajax)
 
-Modals were used for the OrderItem form display. The w3schools modal reference was incredibly helpful: https://www.w3schools.com/howto/howto_css_modals.asp
+Modals were used for the OrderItem form display. The w3schools modal reference was very helpful: https://www.w3schools.com/howto/howto_css_modals.asp
