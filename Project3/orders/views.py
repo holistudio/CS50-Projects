@@ -15,22 +15,26 @@ from django.core.mail import send_mail
 from decimal import *
 import math, random, os
 
+#get the current user's shopping cart or create one if it doesn't exist yet.
 def get_current_shopping_cart(request):
 	if request.user.is_authenticated:
+		#get the user shopping cart that's 'in process'
 		cart_query = ShoppingCart.objects.filter(user = request.user, order_status='0');
 		if len(cart_query)==0:
+			#if no shopping cart is found, create one for the user
 			new_cart = ShoppingCart(user=request.user);
 			new_cart.save();
 			return new_cart;
 		else:
+			#else, get the first in-process cart
 			return cart_query.get();
 	else:
+		#return a string if user is not logged in.
 		return 'NO_USER_LOGGED_IN'
 
-
 # Create your views here.
-
 def index(request):
+	#load menu items in separate lists
 	pizza_list = PizzaMenuItem.objects.order_by('item_name', 'topping_sel', 'price').filter(item_name='Regular'); #order by item name then topping then price
 	sicilian_pizza_list = PizzaMenuItem.objects.order_by('item_name', 'topping_sel', 'price').filter(item_name='Sicilian');
 	subs_list = SubMenuItem.objects.order_by('item_name', '-size');
@@ -53,11 +57,13 @@ def index(request):
 		'topping_list':topping_list,
 	}
 
+	#load shopping cart into context (esp for displaying shopping cart item count in navbar)
 	shopping_cart = get_current_shopping_cart(request);
 	if shopping_cart != 'NO_USER_LOGGED_IN':
 		context['shopping_cart'] = shopping_cart;
 		shopping_cart_items = OrderItem.objects.filter(shopping_cart=shopping_cart);
 		context['shopping_cart_items'] = shopping_cart_items;
+
 	return HttpResponse(template.render(context, request))
 
 def item_display(request):
@@ -65,7 +71,7 @@ def item_display(request):
 		item_type = request.POST["item_type"];
 		item_id = request.POST["item_id"];
 		itemJSON = {};
-		#based on the item's type select the menu with the id and return it as a JSON
+		#based on the item's type select the MenuItem with the id and return it as a JSON
 		if item_type=='Pizza':
 			item = PizzaMenuItem.objects.get(id=item_id);
 			itemJSON={'size' : item.get_size_display(),
@@ -122,21 +128,23 @@ def add_item_to_cart(request):
 		if len(add_ons)>0:
 			if add_ons[0]==',':
 				add_ons = add_ons[1:];
+
 		#final price from form
 		final_price = request.POST['price'];
 
-		#create an order item model instance
 
+		#find user's in-process shopping cart
 		cart = get_current_shopping_cart(request);
+		#create an order item model instance
 		o = OrderItem(menu_item=menu_item, final_price = final_price, add_ons = add_ons, shopping_cart = cart);
 		o.save();
 		cart.save();
-		#if there isn't a shopping cart, create an instance
-
+	#return to the front page
 	return HttpResponseRedirect(reverse("orders:index"))
 
 def shopping_cart(request):
 	if request.user.is_authenticated:
+		#find the in-process shopping cart for user and display order items
 		shopping_cart= get_current_shopping_cart(request);
 		shopping_cart_items = OrderItem.objects.filter(shopping_cart=shopping_cart);
 		context = {
@@ -146,6 +154,7 @@ def shopping_cart(request):
 		template = loader.get_template('orders/cart.html')
 		return HttpResponse(template.render(context, request));
 	else:
+		#redirect to front page if user is not logged in
 		return HttpResponseRedirect(reverse("orders:index"))
 
 
@@ -162,20 +171,29 @@ def remove_cart_item(request):
 
 def check_out(request):
 	if request.method == 'POST':
+		#find the in-process shopping cart for user and display order items
 		shopping_cart= get_current_shopping_cart(request);
+
+		#check if there are items in the shopping cart (total_cost>0)
 		if shopping_cart.total_cost>Decimal(0):
+			#update shopping cart order status, add confirmation number and time order placed
 			shopping_cart.order_status='1';
 			shopping_cart.checkout_time = localtime(now());
 			conf_num = math.floor(random.random()*1000000);
 			shopping_cart.conf_num = conf_num;
 			shopping_cart.save();
+
+			#find associated order items, to be displayed in order confirmation email to user
 			shopping_cart_items = OrderItem.objects.filter(shopping_cart=shopping_cart);
 			context = {
 				'shopping_cart': shopping_cart,
 				'shopping_cart_items': shopping_cart_items,
 				'first_name':request.user.first_name,
 			}
+			#render html email message
 			html_message = loader.render_to_string('orders/order_conf.html',context)
+
+			#email user confirmation email with order confirmation number and items ordered
 			send_mail(
 			    'Your order for PizzaHub is in the works!',
 			    '',
@@ -184,12 +202,16 @@ def check_out(request):
 			    fail_silently=False,
 				html_message=html_message
 			);
+
+			#flash success message on front page
 			messages.add_message(request, messages.SUCCESS, str(f"Your order is in the works! Order Confirmation #: {conf_num}"))
 			return HttpResponseRedirect(reverse("orders:index"));
 		else:
-			messages.add_message(request, messages.ERROR, str(f"Please add items before checking out"))
+			#flash error message if there are no items in cart at checkout
+			messages.add_message(request, messages.ERROR, str(f"Please add items before checking out."))
 			return HttpResponseRedirect(reverse("orders:shopping_cart"))
 	else:
+		#flash error message if a non-POST request was made for check out
 		messages.add_message(request, messages.ERROR, str(f"Please check out by clicking the checkout button below."))
 		return HttpResponseRedirect(reverse("orders:shopping_cart"))
 
@@ -200,6 +222,7 @@ def login_view(request):
 		user = authenticate(request, username=username, password=password)
 		if user is not None:
 			login(request, user)
+			#find user's in-process shopping cart or create a new one 
 			get_current_shopping_cart(request);
 			return HttpResponseRedirect(reverse("orders:index"))
 		else:
